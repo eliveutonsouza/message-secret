@@ -1,36 +1,139 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🌌 Cartas Cósmicas
 
-## Getting Started
+Uma aplicação web para criar cartas misteriosas que só podem ser lidas na data escolhida pelo remetente.
 
-First, run the development server:
+## 🚀 Tecnologias
 
-```bash
+- **Next.js 15** - Framework React com App Router
+- **React 18** - Biblioteca de interface
+- **Prisma** - ORM para banco de dados
+- **Auth.js** - Autenticação (Google + Magic Link)
+- **PostgreSQL** - Banco de dados
+- **ShadCN UI** - Componentes de interface
+- **Tailwind CSS** - Estilização
+- **TypeScript** - Tipagem estática
+- **Zod** - Validação de dados
+
+## 🛠️ Configuração
+
+### 1. Instalar dependências
+
+\`\`\`bash
+npm install
+\`\`\`
+
+### 2. Configurar variáveis de ambiente
+
+Copie o arquivo `.env.example` para `.env.local` e configure as variáveis:
+
+\`\`\`bash
+cp .env.example .env.local
+\`\`\`
+
+### 3. Configurar banco de dados
+
+\`\`\`bash
+
+# Gerar cliente Prisma
+
+npm run db:generate
+
+# Aplicar migrações
+
+npm run db:push
+
+# (Opcional) Executar seed
+
+npm run db:seed
+\`\`\`
+
+### 4. Executar aplicação
+
+\`\`\`bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+\`\`\`
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 📁 Estrutura do Projeto
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+\`\`\`
+├── app/ # Páginas e rotas (App Router)
+├── components/ # Componentes reutilizáveis
+├── lib/ # Utilitários e configurações
+│ ├── prisma.ts # Cliente Prisma
+│ ├── services/ # Serviços de negócio
+│ ├── validations/ # Schemas Zod
+│ └── types/ # Tipos TypeScript
+├── prisma/ # Schema e migrações
+└── public/ # Arquivos estáticos
+\`\`\`
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🎯 Funcionalidades
 
-## Learn More
+- ✅ Autenticação com Supabase (Magic Link + Google)
+- ✅ Criação de cartas com data de liberação
+- ✅ Sistema de favoritos
+- ✅ Contagem regressiva para liberação
+- ✅ API REST completa
+- ✅ Validação com Zod
+- ✅ Design responsivo cósmico
+- 🔄 Integração de pagamento (Kwify)
+- 🔄 Webhooks de pagamento
+- 🔄 Notificações por email
 
-To learn more about Next.js, take a look at the following resources:
+## 🗄️ Banco de Dados
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Modelos Principais
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- **User**: Usuários da aplicação
+- **Letter**: Cartas criadas pelos usuários
 
-## Deploy on Vercel
+### Comandos Úteis
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+\`\`\`bash
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+# Visualizar banco no Prisma Studio
+
+npm run db:studio
+
+# Criar nova migração
+
+npm run db:migrate
+
+# Reset do banco
+
+npx prisma migrate reset
+\`\`\`
+
+## 🔐 Autenticação
+
+A aplicação usa Auth.js para autenticação com:
+
+- Magic Link (email via Nodemailer)
+- OAuth com Google
+- Sessões seguras com JWT
+- Adapter Prisma para persistência
+
+## 💳 Pagamentos
+
+Integração preparada para Kwify:
+
+- Webhook endpoint: `/api/webhooks/payment`
+- Status de pagamento: PENDING, PAID, FAILED
+- Ativação automática após pagamento
+
+## 🚀 Deploy
+
+1. Configure as variáveis de ambiente na Vercel
+2. Conecte o repositório
+3. Deploy automático
+
+## 📝 Scripts Disponíveis
+
+- `npm run dev` - Executar em desenvolvimento
+- `npm run build` - Build para produção
+- `npm run start` - Executar build de produção
+- `npm run db:generate` - Gerar cliente Prisma
+- `npm run db:push` - Aplicar schema ao banco
+- `npm run db:migrate` - Executar migrações
+- `npm run db:studio` - Abrir Prisma Studio
+- `npm run db:seed` - Executar seed do banco
