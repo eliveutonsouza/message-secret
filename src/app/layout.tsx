@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { CosmicBackground } from "@/components/cosmic-background";
-import { SonnerProvider } from "@/components/providers/sonner-provider";
+import { Toaster } from "@/components/ui/sonner";
 import { SessionProvider } from "next-auth/react";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -26,7 +26,7 @@ export default function RootLayout({
         <SessionProvider>
           <CosmicBackground />
           <div className="relative z-10 min-h-screen">{children}</div>
-          <SonnerProvider />
+          <Toaster />
         </SessionProvider>
       </body>
     </html>

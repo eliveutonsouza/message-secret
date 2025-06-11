@@ -1,5 +1,6 @@
 import NextAuth from "next-auth";
 import Google from "next-auth/providers/google";
+import Resend from "next-auth/providers/resend";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@/lib/prisma";
 import { sendWelcomeEmail } from "@/lib/actions/email";
@@ -10,6 +11,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    }),
+    Resend({
+      apiKey: process.env.RESEND_API_KEY!,
+      from: process.env.RESEND_FROM_EMAIL!,
     }),
   ],
   pages: {
@@ -32,13 +37,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         update: {
           email: user.email!,
           name: user.name,
-          avatarUrl: user.image,
+          image: user.image,
         },
         create: {
           id: user.id,
           email: user.email!,
           name: user.name,
-          avatarUrl: user.image,
+          image: user.image,
         },
       });
 

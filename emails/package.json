@@ -7,7 +7,7 @@
     "dev": "email dev"
   },
   "dependencies": {
-    "@react-email/components": "^0.0.15",
-    "react": "^18.2.0"
+    "@react-email/components": "^0.0.42",
+    "react": "^19.0.0"
   }
 }
