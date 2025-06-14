@@ -1,12 +1,15 @@
-"use client"
-
-import { useState } from "react"
-import { CosmicCard, CardContent, CardHeader, CardTitle } from "@/components/ui/cosmic-card"
-import { CosmicButton } from "@/components/ui/cosmic-button"
-import { CosmicBadge } from "@/components/ui/cosmic-badge"
-import { CosmicAvatar } from "@/components/ui/cosmic-avatar"
-import { CosmicSkeleton } from "@/components/ui/cosmic-skeleton"
-import { Button } from "@/components/ui/button"
+import { useState } from "react";
+import {
+  CosmicCard,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/cosmic-card";
+import { CosmicButton } from "@/components/ui/cosmic-button";
+import { CosmicBadge } from "@/components/ui/cosmic-badge";
+import { CosmicAvatar } from "@/components/ui/cosmic-avatar";
+import { CosmicSkeleton } from "@/components/ui/cosmic-skeleton";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -14,70 +17,95 @@ import {
   CosmicDropdownMenuItem,
   CosmicDropdownMenuLabel,
   DropdownMenuSeparator,
-} from "@/components/ui/cosmic-dropdown"
-import { Plus, Heart, Clock, Star, Edit, ExternalLink, LogOut, MoreVertical, User } from "lucide-react"
-import Link from "next/link"
-import { useRouter } from "next/navigation"
-import { useToast } from "@/hooks/use-toast"
-import type { Letter, User } from "@prisma/client"
-import { signOut } from "next-auth/react"
+} from "@/components/ui/cosmic-dropdown";
+import {
+  Plus,
+  Heart,
+  Clock,
+  Star,
+  Edit,
+  ExternalLink,
+  LogOut,
+  MoreVertical,
+  User,
+} from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useToast } from "@/hooks/use-toast";
+import type { Letter } from "@prisma/client";
+import { signOut } from "next-auth/react";
 
 interface DashboardContentProps {
-  letters: Letter[]
-  user: User
+  letters: Letter[];
+  user: User;
 }
 
-export function DashboardContent({ letters: initialLetters, user }: DashboardContentProps) {
-  const [letters, setLetters] = useState(initialLetters)
-  const [loading, setLoading] = useState(false)
-  const router = useRouter()
-  const { toast } = useToast()
+export function DashboardContent({
+  letters: initialLetters,
+  user,
+}: DashboardContentProps) {
+  const [letters, setLetters] = useState(initialLetters);
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+  const { toast } = useToast();
 
   const handleLogout = async () => {
-    await signOut({ callbackUrl: "/" })
-  }
+    await signOut({ callbackUrl: "/" });
+  };
 
   const toggleFavorite = async (letterId: string, currentFavorite: boolean) => {
     try {
       const response = await fetch(`/api/letters/${letterId}/favorite`, {
         method: "PATCH",
-      })
+      });
 
       if (!response.ok) {
-        throw new Error("Erro ao atualizar favorito")
+        throw new Error("Erro ao atualizar favorito");
       }
 
-      const updatedLetter = await response.json()
+      const updatedLetter = await response.json();
 
-      setLetters(letters.map((letter) => (letter.id === letterId ? updatedLetter : letter)))
+      setLetters(
+        letters.map((letter) =>
+          letter.id === letterId ? updatedLetter : letter
+        )
+      );
 
       toast({
-        title: currentFavorite ? "Removido dos favoritos" : "Adicionado aos favoritos",
+        title: currentFavorite
+          ? "Removido dos favoritos"
+          : "Adicionado aos favoritos",
         description: "Carta atualizada com sucesso!",
-      })
+      });
     } catch (error) {
       toast({
         title: "Erro",
         description: "Não foi possível atualizar a carta.",
         variant: "destructive",
-      })
+      });
     }
-  }
+  };
 
   const getStatusBadge = (letter: Letter) => {
-    const now = new Date()
-    const releaseDate = new Date(letter.releaseDate)
+    const now = new Date();
+    const releaseDate = new Date(letter.releaseDate);
 
     if (letter.paymentStatus !== PaymentStatus.PAID) {
-      return <CosmicBadge variant="cosmic-destructive">Pagamento Pendente</CosmicBadge>
+      return (
+        <CosmicBadge variant="cosmic-destructive">
+          Pagamento Pendente
+        </CosmicBadge>
+      );
     }
 
     if (releaseDate > now) {
-      return <CosmicBadge variant="cosmic-outline">Aguardando Liberação</CosmicBadge>
+      return (
+        <CosmicBadge variant="cosmic-outline">Aguardando Liberação</CosmicBadge>
+      );
     }
 
-    return <CosmicBadge variant="cosmic-success">Liberada</CosmicBadge>
-  }
+    return <CosmicBadge variant="cosmic-success">Liberada</CosmicBadge>;
+  };
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("pt-BR", {
@@ -86,8 +114,8 @@ export function DashboardContent({ letters: initialLetters, user }: DashboardCon
       year: "numeric",
       hour: "2-digit",
       minute: "2-digit",
-    })
-  }
+    });
+  };
 
   const getUserInitials = (name?: string | null, email?: string | null) => {
     if (name) {
@@ -96,13 +124,13 @@ export function DashboardContent({ letters: initialLetters, user }: DashboardCon
         .map((n) => n[0])
         .join("")
         .toUpperCase()
-        .slice(0, 2)
+        .slice(0, 2);
     }
     if (email) {
-      return email.slice(0, 2).toUpperCase()
+      return email.slice(0, 2).toUpperCase();
     }
-    return "U"
-  }
+    return "U";
+  };
 
   if (loading) {
     return (
@@ -131,7 +159,7 @@ export function DashboardContent({ letters: initialLetters, user }: DashboardCon
           </div>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -140,19 +168,28 @@ export function DashboardContent({ letters: initialLetters, user }: DashboardCon
         {/* Header */}
         <div className="flex justify-between items-center mb-8">
           <div>
-            <h1 className="text-3xl md:text-4xl font-bold cosmic-text-glow">Suas Cartas Cósmicas</h1>
-            <p className="text-purple-200 mt-2">Bem-vindo de volta, {user.name || user.email}</p>
+            <h1 className="text-3xl md:text-4xl font-bold cosmic-text-glow">
+              Suas Cartas Cósmicas
+            </h1>
+            <p className="text-purple-200 mt-2">
+              Bem-vindo de volta, {user.name || user.email}
+            </p>
           </div>
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="text-purple-300 hover:text-purple-200">
+              <Button
+                variant="ghost"
+                className="text-purple-300 hover:text-purple-200"
+              >
                 <CosmicAvatar
                   src={user.image || undefined}
                   fallback={getUserInitials(user.name, user.email)}
                   className="h-8 w-8 mr-2"
                 />
-                <span className="hidden md:inline">{user.name || user.email}</span>
+                <span className="hidden md:inline">
+                  {user.name || user.email}
+                </span>
               </Button>
             </DropdownMenuTrigger>
             <CosmicDropdownMenuContent align="end">
@@ -186,8 +223,12 @@ export function DashboardContent({ letters: initialLetters, user }: DashboardCon
           <CosmicCard className="text-center py-12">
             <CardContent>
               <Star className="h-16 w-16 text-purple-400 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-purple-200 mb-2">Nenhuma carta criada ainda</h3>
-              <p className="text-purple-300 mb-6">Que tal começar sua jornada cósmica criando sua primeira carta?</p>
+              <h3 className="text-xl font-semibold text-purple-200 mb-2">
+                Nenhuma carta criada ainda
+              </h3>
+              <p className="text-purple-300 mb-6">
+                Que tal começar sua jornada cósmica criando sua primeira carta?
+              </p>
               <Link href="/create-letter">
                 <CosmicButton>
                   <Plus className="mr-2 h-4 w-4" />
@@ -209,10 +250,14 @@ export function DashboardContent({ letters: initialLetters, user }: DashboardCon
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => toggleFavorite(letter.id, letter.isFavorite)}
+                        onClick={() =>
+                          toggleFavorite(letter.id, letter.isFavorite)
+                        }
                         className="text-purple-300 hover:text-purple-200 p-1 opacity-0 group-hover:opacity-100 transition-opacity"
                       >
-                        <Heart className={`h-4 w-4 ${letter.isFavorite ? "fill-current text-red-400" : ""}`} />
+                        <Heart
+                          className={`h-4 w-4 ${letter.isFavorite ? "fill-current text-red-400" : ""}`}
+                        />
                       </Button>
 
                       <DropdownMenu>
@@ -233,7 +278,10 @@ export function DashboardContent({ letters: initialLetters, user }: DashboardCon
                             </Link>
                           </CosmicDropdownMenuItem>
                           <CosmicDropdownMenuItem asChild>
-                            <Link href={`/letter/${letter.uniqueLink}`} target="_blank">
+                            <Link
+                              href={`/letter/${letter.uniqueLink}`}
+                              target="_blank"
+                            >
                               <ExternalLink className="mr-2 h-4 w-4" />
                               Visualizar
                             </Link>
@@ -245,7 +293,10 @@ export function DashboardContent({ letters: initialLetters, user }: DashboardCon
                   <div className="flex flex-wrap gap-2">
                     {getStatusBadge(letter)}
                     {letter.isFavorite && (
-                      <CosmicBadge variant="cosmic-outline" className="border-red-400 text-red-400">
+                      <CosmicBadge
+                        variant="cosmic-outline"
+                        className="border-red-400 text-red-400"
+                      >
                         ⭐ Favorita
                       </CosmicBadge>
                     )}
@@ -253,7 +304,9 @@ export function DashboardContent({ letters: initialLetters, user }: DashboardCon
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
-                    <p className="text-purple-300 text-sm line-clamp-3">{letter.content}</p>
+                    <p className="text-purple-300 text-sm line-clamp-3">
+                      {letter.content}
+                    </p>
                     <div className="flex items-center text-purple-400 text-sm">
                       <Clock className="h-4 w-4 mr-1" />
                       Libera em: {formatDate(letter.releaseDate)}
@@ -266,5 +319,5 @@ export function DashboardContent({ letters: initialLetters, user }: DashboardCon
         )}
       </div>
     </div>
-  )
+  );
 }

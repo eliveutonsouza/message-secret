@@ -39,16 +39,10 @@ export async function signInWithEmail(formData: FormData) {
 }
 
 export async function signInWithGoogle(callbackUrl?: string) {
-  try {
-    await signIn("google", {
-      redirectTo: callbackUrl || "/dashboard",
-    });
-  } catch (error) {
-    if (error instanceof AuthError) {
-      return { error: "Erro na autenticação com Google. Tente novamente." };
-    }
-    return { error: "Erro inesperado. Tente novamente." };
-  }
+  await signIn("google", {
+    redirectTo: callbackUrl || "/dashboard",
+  });
+  // Não retorna nada, pois o NextAuth faz o redirecionamento
 }
 
 export async function signOutAction() {

@@ -1,60 +1,65 @@
-"use client"
-
-import { useState, useEffect } from "react"
-import { CosmicCard, CardContent, CardHeader, CardTitle } from "@/components/ui/cosmic-card"
-import { CosmicButton } from "@/components/ui/cosmic-button"
-import { CosmicBadge } from "@/components/ui/cosmic-badge"
-import { CosmicProgress } from "@/components/ui/cosmic-progress"
-import { CosmicSeparator } from "@/components/ui/cosmic-separator"
-import { Clock, Heart, Sparkles, Lock, Calendar } from "lucide-react"
-import Link from "next/link"
-import type { Letter } from "@prisma/client"
+import { useState, useEffect } from "react";
+import {
+  CosmicCard,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/cosmic-card";
+import { CosmicButton } from "@/components/ui/cosmic-button";
+import { CosmicBadge } from "@/components/ui/cosmic-badge";
+import { CosmicProgress } from "@/components/ui/cosmic-progress";
+import { CosmicSeparator } from "@/components/ui/cosmic-separator";
+import { Clock, Heart, Sparkles, Lock, Calendar } from "lucide-react";
+import Link from "next/link";
+import type { Letter } from "@prisma/client";
 
 interface LetterViewProps {
-  letter: Letter
+  letter: Letter;
 }
 
 export function LetterView({ letter }: LetterViewProps) {
   const [timeLeft, setTimeLeft] = useState<{
-    days: number
-    hours: number
-    minutes: number
-    seconds: number
-    total: number
-  } | null>(null)
-  const [isRevealed, setIsRevealed] = useState(false)
+    days: number;
+    hours: number;
+    minutes: number;
+    seconds: number;
+    total: number;
+  } | null>(null);
+  const [isRevealed, setIsRevealed] = useState(false);
 
   useEffect(() => {
-    const releaseDate = new Date(letter.releaseDate)
-    const now = new Date()
+    const releaseDate = new Date(letter.releaseDate);
+    const now = new Date();
 
     if (now >= releaseDate) {
-      setIsRevealed(true)
-      return
+      setIsRevealed(true);
+      return;
     }
 
     const updateCountdown = () => {
-      const now = new Date()
-      const difference = releaseDate.getTime() - now.getTime()
+      const now = new Date();
+      const difference = releaseDate.getTime() - now.getTime();
 
       if (difference <= 0) {
-        setIsRevealed(true)
-        return
+        setIsRevealed(true);
+        return;
       }
 
-      const days = Math.floor(difference / (1000 * 60 * 60 * 24))
-      const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
-      const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60))
-      const seconds = Math.floor((difference % (1000 * 60)) / 1000)
+      const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+      const hours = Math.floor(
+        (difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+      );
+      const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((difference % (1000 * 60)) / 1000);
 
-      setTimeLeft({ days, hours, minutes, seconds, total: difference })
-    }
+      setTimeLeft({ days, hours, minutes, seconds, total: difference });
+    };
 
-    updateCountdown()
-    const interval = setInterval(updateCountdown, 1000)
+    updateCountdown();
+    const interval = setInterval(updateCountdown, 1000);
 
-    return () => clearInterval(interval)
-  }, [letter.releaseDate])
+    return () => clearInterval(interval);
+  }, [letter.releaseDate]);
 
   if (letter.paymentStatus !== PaymentStatus.PAID) {
     return (
@@ -62,8 +67,12 @@ export function LetterView({ letter }: LetterViewProps) {
         <CosmicCard className="max-w-md text-center">
           <CardContent className="p-8">
             <Lock className="h-16 w-16 text-purple-400 mx-auto mb-4" />
-            <h2 className="text-2xl font-bold text-purple-200 mb-4">Carta Não Ativada</h2>
-            <p className="text-purple-300 mb-6">Esta carta ainda não foi ativada. O pagamento pode estar pendente.</p>
+            <h2 className="text-2xl font-bold text-purple-200 mb-4">
+              Carta Não Ativada
+            </h2>
+            <p className="text-purple-300 mb-6">
+              Esta carta ainda não foi ativada. O pagamento pode estar pendente.
+            </p>
             <CosmicSeparator className="my-6" />
             <Link href="/">
               <CosmicButton>Criar Minha Carta</CosmicButton>
@@ -71,12 +80,15 @@ export function LetterView({ letter }: LetterViewProps) {
           </CardContent>
         </CosmicCard>
       </div>
-    )
+    );
   }
 
-  const totalDuration = new Date(letter.releaseDate).getTime() - new Date(letter.createdAt).getTime()
-  const elapsed = totalDuration - (timeLeft?.total || 0)
-  const progressPercentage = totalDuration > 0 ? (elapsed / totalDuration) * 100 : 100
+  const totalDuration =
+    new Date(letter.releaseDate).getTime() -
+    new Date(letter.createdAt).getTime();
+  const elapsed = totalDuration - (timeLeft?.total || 0);
+  const progressPercentage =
+    totalDuration > 0 ? (elapsed / totalDuration) * 100 : 100;
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 text-white">
@@ -107,19 +119,27 @@ export function LetterView({ letter }: LetterViewProps) {
                 <>
                   <div className="grid grid-cols-4 gap-4 mb-8">
                     <CosmicCard className="p-4">
-                      <div className="text-2xl font-bold text-purple-200">{timeLeft.days}</div>
+                      <div className="text-2xl font-bold text-purple-200">
+                        {timeLeft.days}
+                      </div>
                       <div className="text-sm text-purple-400">Dias</div>
                     </CosmicCard>
                     <CosmicCard className="p-4">
-                      <div className="text-2xl font-bold text-purple-200">{timeLeft.hours}</div>
+                      <div className="text-2xl font-bold text-purple-200">
+                        {timeLeft.hours}
+                      </div>
                       <div className="text-sm text-purple-400">Horas</div>
                     </CosmicCard>
                     <CosmicCard className="p-4">
-                      <div className="text-2xl font-bold text-purple-200">{timeLeft.minutes}</div>
+                      <div className="text-2xl font-bold text-purple-200">
+                        {timeLeft.minutes}
+                      </div>
                       <div className="text-sm text-purple-400">Min</div>
                     </CosmicCard>
                     <CosmicCard className="p-4">
-                      <div className="text-2xl font-bold text-purple-200">{timeLeft.seconds}</div>
+                      <div className="text-2xl font-bold text-purple-200">
+                        {timeLeft.seconds}
+                      </div>
                       <div className="text-sm text-purple-400">Seg</div>
                     </CosmicCard>
                   </div>
@@ -129,7 +149,10 @@ export function LetterView({ letter }: LetterViewProps) {
                       <span>Progresso da jornada temporal</span>
                       <span>{progressPercentage.toFixed(1)}%</span>
                     </div>
-                    <CosmicProgress value={progressPercentage} className="h-3" />
+                    <CosmicProgress
+                      value={progressPercentage}
+                      className="h-3"
+                    />
                   </div>
                 </>
               )}
@@ -152,8 +175,8 @@ export function LetterView({ letter }: LetterViewProps) {
 
               <CosmicCard className="p-4">
                 <p className="text-purple-300 italic text-sm">
-                  "O amor não conhece distância nem tempo. Ele simplesmente é, como as estrelas que brilham há milhões
-                  de anos."
+                  "O amor não conhece distância nem tempo. Ele simplesmente é,
+                  como as estrelas que brilham há milhões de anos."
                 </p>
               </CosmicCard>
             </CardContent>
@@ -174,14 +197,18 @@ export function LetterView({ letter }: LetterViewProps) {
             <CardContent className="p-8">
               <div className="text-center mb-6">
                 <Sparkles className="h-12 w-12 text-purple-400 mx-auto mb-4 animate-pulse" />
-                <CosmicBadge variant="cosmic-outline">Revelada em {new Date().toLocaleDateString("pt-BR")}</CosmicBadge>
+                <CosmicBadge variant="cosmic-outline">
+                  Revelada em {new Date().toLocaleDateString("pt-BR")}
+                </CosmicBadge>
               </div>
 
               <CosmicSeparator className="my-6" />
 
               <CosmicCard className="p-6 mb-6">
                 <div className="prose prose-invert max-w-none">
-                  <p className="text-purple-100 text-lg leading-relaxed whitespace-pre-wrap">{letter.content}</p>
+                  <p className="text-purple-100 text-lg leading-relaxed whitespace-pre-wrap">
+                    {letter.content}
+                  </p>
                 </div>
               </CosmicCard>
 
@@ -189,7 +216,8 @@ export function LetterView({ letter }: LetterViewProps) {
 
               <div className="text-center">
                 <p className="text-purple-400 text-sm mb-4">
-                  Esta mensagem transcendeu o espaço-tempo para chegar até você ✨
+                  Esta mensagem transcendeu o espaço-tempo para chegar até você
+                  ✨
                 </p>
                 <Link href="/">
                   <CosmicButton>
@@ -203,5 +231,5 @@ export function LetterView({ letter }: LetterViewProps) {
         )}
       </div>
     </div>
-  )
+  );
 }

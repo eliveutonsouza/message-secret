@@ -29,7 +29,7 @@ export async function sendMagicLinkEmail(data: any) {
     );
 
     const result = await resend.emails.send({
-      from: "Cartas Cósmicas <noreply@cartascosmicas.com>",
+      from: "Cartas Cósmicas <noreply@carmanage.tech>",
       to: validatedData.email,
       subject: "🌟 Seu link mágico chegou!",
       html: emailHtml,
@@ -56,7 +56,7 @@ export async function sendLetterNotificationEmail(data: any) {
     );
 
     const result = await resend.emails.send({
-      from: "Cartas Cósmicas <noreply@cartascosmicas.com>",
+      from: "Cartas Cósmicas <noreply@carmanage.tech>",
       to: validatedData.recipientEmail,
       subject: `💌 Uma carta cósmica chegou para você!`,
       html: emailHtml,
@@ -80,7 +80,7 @@ export async function sendWelcomeEmail(data: any) {
     );
 
     const result = await resend.emails.send({
-      from: "Cartas Cósmicas <welcome@cartascosmicas.com>",
+      from: "Cartas Cósmicas <welcome@carmanage.tech>",
       to: validatedData.email,
       subject: "🚀 Bem-vindo à jornada cósmica!",
       html: emailHtml,
@@ -105,7 +105,7 @@ export async function sendPaymentConfirmationEmail(data: any) {
     );
 
     const result = await resend.emails.send({
-      from: "Cartas Cósmicas <payments@cartascosmicas.com>",
+      from: "Cartas Cósmicas <payments@carmanage.tech>",
       to: data.email,
       subject: "✅ Pagamento confirmado - Sua carta está ativa!",
       html: emailHtml,
@@ -130,8 +130,8 @@ export async function sendContactFormEmail(data: any) {
     );
 
     const result = await resend.emails.send({
-      from: "Cartas Cósmicas <contact@cartascosmicas.com>",
-      to: "suporte@cartascosmicas.com",
+      from: "Cartas Cósmicas <contact@carmanage.tech>",
+      to: "suporte@carmanage.tech",
       subject: `📧 Novo contato: ${data.subject}`,
       html: emailHtml,
       replyTo: data.email,
@@ -154,7 +154,7 @@ export async function sendBulkEmail(
     const results = await Promise.allSettled(
       emails.map(async (email) => {
         return await resend.emails.send({
-          from: "Cartas Cósmicas <noreply@cartascosmicas.com>",
+          from: "Cartas Cósmicas <noreply@carmanage.tech>",
           to: email,
           subject,
           html: template,

@@ -4,6 +4,9 @@ import { NextResponse } from "next/server";
 export default auth((req) => {
   const { pathname } = req.nextUrl;
 
+  // Log para depuração
+  console.log("req.auth:", req.auth);
+
   // Rotas protegidas que requerem autenticação
   const protectedRoutes = ["/dashboard", "/create-letter", "/edit-letter"];
 

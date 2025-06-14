@@ -1,27 +1,26 @@
-"use client"
+"use client";
 
-import { CosmicButton } from "@/components/ui/cosmic-button"
-import { signInWithGoogle } from "@/lib/actions"
-import { Sparkles } from "lucide-react"
-import { toast } from "sonner"
+import { CosmicButton } from "@/components/ui/cosmic-button";
+import { signInWithGoogle } from "@/lib/actions";
+import { Sparkles } from "lucide-react";
 
 interface SocialLoginButtonsProps {
-  callbackUrl?: string
+  callbackUrl?: string;
 }
 
 export function SocialLoginButtons({ callbackUrl }: SocialLoginButtonsProps) {
-  async function handleGoogleLogin() {
-    const result = await signInWithGoogle(callbackUrl)
-
-    if (result?.error) {
-      toast.error(result.error)
-    }
+  function handleGoogleLogin() {
+    signInWithGoogle(callbackUrl);
   }
 
   return (
-    <CosmicButton variant="cosmic-outline" className="w-full" onClick={handleGoogleLogin}>
+    <CosmicButton
+      variant="cosmic-outline"
+      className="w-full"
+      onClick={handleGoogleLogin}
+    >
       <Sparkles className="mr-2 h-4 w-4" />
       Google
     </CosmicButton>
-  )
+  );
 }

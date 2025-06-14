@@ -1,97 +1,139 @@
-"use client"
+"use client";
 
-import { CosmicCard, CardContent, CardHeader, CardTitle } from "@/components/ui/cosmic-card"
+import { createLetterAction } from "@/lib/actions";
+import { Sparkles, Info } from "lucide-react";
+import { toast } from "sonner";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import {
-  CosmicInput,
-  CosmicLabel,
-  CosmicFormField,
-  CosmicFormDescription,
-  CosmicTextarea,
-  CosmicSubmitButton,
-} from "@/components/ui/cosmic-form"
-import { CosmicAlert, AlertDescription } from "@/components/ui/cosmic-alert"
-import { CosmicProgress } from "@/components/ui/cosmic-progress"
-import { createLetterAction } from "@/lib/actions"
-import { Sparkles, Info } from "lucide-react"
-import { useState } from "react"
-import { toast } from "sonner"
+  Form,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage,
+  FormDescription,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { createLetterSchema } from "@/lib/schemas/letter";
 
 export function CreateLetterForm() {
-  const [content, setContent] = useState("")
+  const form = useForm({
+    resolver: zodResolver(createLetterSchema),
+    defaultValues: {
+      title: "",
+      content: "",
+      releaseDate: "",
+    },
+  });
 
-  async function handleSubmit(formData: FormData) {
-    const result = await createLetterAction(formData)
-
+  async function onSubmit(values) {
+    const result = await createLetterAction(values);
     if (result?.error) {
-      toast.error(result.error)
+      toast.error(result.error);
     }
     // Success case is handled by redirect in the action
   }
 
-  const tomorrow = new Date()
-  tomorrow.setDate(tomorrow.getDate() + 1)
-  const minDate = tomorrow.toISOString().slice(0, 16)
-
-  const contentProgress = (content.length / 5000) * 100
+  const content = form.watch("content");
+  const contentProgress = (content.length / 5000) * 100;
 
   return (
-    <CosmicCard>
-      <CardHeader>
-        <CardTitle className="text-purple-200">Nova Mensagem Cósmica</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <form action={handleSubmit} className="space-y-6">
-          <CosmicFormField>
-            <CosmicLabel htmlFor="title">Título da Carta (opcional)</CosmicLabel>
-            <CosmicInput id="title" name="title" placeholder="Ex: Para meu amor no futuro..." />
-            <CosmicFormDescription>Um título ajuda a identificar sua carta no dashboard</CosmicFormDescription>
-          </CosmicFormField>
-
-          <CosmicFormField>
-            <CosmicLabel htmlFor="content">Sua Mensagem Cósmica *</CosmicLabel>
-            <CosmicTextarea
-              id="content"
-              name="content"
-              placeholder="Escreva aqui sua mensagem que transcenderá o tempo..."
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              rows={8}
-              required
-            />
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm">
-                <CosmicFormDescription>{content.length}/5000 caracteres</CosmicFormDescription>
-                <CosmicFormDescription>{contentProgress.toFixed(0)}%</CosmicFormDescription>
-              </div>
-              <CosmicProgress value={contentProgress} className="h-2" />
-            </div>
-          </CosmicFormField>
-
-          <CosmicFormField>
-            <CosmicLabel htmlFor="releaseDate">Data de Liberação *</CosmicLabel>
-            <CosmicInput id="releaseDate" name="releaseDate" type="datetime-local" min={minDate} required />
-            <CosmicFormDescription>A carta só poderá ser lida após esta data</CosmicFormDescription>
-          </CosmicFormField>
-
-          <CosmicAlert variant="cosmic">
-            <Info className="h-4 w-4" />
-            <AlertDescription>
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <FormField
+          name="title"
+          control={form.control}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Título da Carta (opcional)</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder="Ex: Para meu amor no futuro..."
+                  {...field}
+                />
+              </FormControl>
+              <FormDescription>
+                Um título ajuda a identificar sua carta no dashboard
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          name="content"
+          control={form.control}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Sua Mensagem Cósmica *</FormLabel>
+              <FormControl>
+                <Textarea
+                  placeholder="Escreva aqui sua mensagem que transcenderá o tempo..."
+                  rows={8}
+                  {...field}
+                />
+              </FormControl>
               <div className="space-y-2">
-                <h3 className="font-semibold">💫 Investimento Cósmico</h3>
-                <p className="text-sm">
-                  Cada carta cósmica custa apenas <strong>R$ 2,99</strong>
-                </p>
-                <p className="text-xs opacity-80">Após criar a carta, você será direcionado para o pagamento seguro</p>
+                <div className="flex justify-between text-sm">
+                  <FormDescription>
+                    {content.length}/5000 caracteres
+                  </FormDescription>
+                  <FormDescription>
+                    {contentProgress.toFixed(0)}%
+                  </FormDescription>
+                </div>
+                <div className="h-2 bg-purple-900 rounded-full overflow-hidden">
+                  <div
+                    className="bg-gradient-to-r from-purple-600 to-blue-600 h-full"
+                    style={{ width: `${contentProgress}%` }}
+                  />
+                </div>
               </div>
-            </AlertDescription>
-          </CosmicAlert>
-
-          <CosmicSubmitButton loadingText="Criando Carta...">
-            <Sparkles className="h-5 w-5" />
-            Criar Carta Cósmica
-          </CosmicSubmitButton>
-        </form>
-      </CardContent>
-    </CosmicCard>
-  )
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          name="releaseDate"
+          control={form.control}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Data de Liberação *</FormLabel>
+              <FormControl>
+                <Input
+                  type="datetime-local"
+                  min={new Date(Date.now() + 86400000)
+                    .toISOString()
+                    .slice(0, 16)}
+                  {...field}
+                />
+              </FormControl>
+              <FormDescription>
+                A carta só poderá ser lida após esta data
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <div className="bg-purple-900/30 rounded-lg p-4 flex items-center gap-3">
+          <Info className="h-4 w-4" />
+          <div>
+            <h3 className="font-semibold">💫 Investimento Cósmico</h3>
+            <p className="text-sm">
+              Cada carta cósmica custa apenas <strong>R$ 2,99</strong>
+            </p>
+            <p className="text-xs opacity-80">
+              Após criar a carta, você será direcionado para o pagamento seguro
+            </p>
+          </div>
+        </div>
+        <Button type="submit" className="w-full flex items-center gap-2">
+          <Sparkles className="h-5 w-5" />
+          Criar Carta Cósmica
+        </Button>
+      </form>
+    </Form>
+  );
 }

@@ -1,39 +1,59 @@
-"use client"
+"use client";
 
-import { CosmicInput, CosmicSubmitButton } from "@/components/ui/cosmic-form"
-import { useState } from "react"
-import { toast } from "sonner"
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  Form,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
+
+const newsletterSchema = z.object({
+  email: z.string().email("Por favor, insira um email válido"),
+});
 
 export function NewsletterForm() {
-  const [email, setEmail] = useState("")
+  const form = useForm({
+    resolver: zodResolver(newsletterSchema),
+    defaultValues: { email: "" },
+  });
 
-  async function handleSubmit(formData: FormData) {
-    const email = formData.get("email") as string
-
-    if (!email || !email.includes("@")) {
-      toast.error("Por favor, insira um email válido")
-      return
-    }
-
+  async function onSubmit(values) {
     // Aqui você integraria com seu serviço de newsletter
-    // Por exemplo: Mailchimp, ConvertKit, etc.
-
-    toast.success("Obrigado! Você receberá nossas novidades cósmicas! ✨")
-    setEmail("")
+    toast.success("Obrigado! Você receberá nossas novidades cósmicas! ✨");
+    form.reset();
   }
 
   return (
-    <form action={handleSubmit} className="flex gap-2 max-w-md mx-auto">
-      <CosmicInput
-        name="email"
-        type="email"
-        placeholder="seu@email.com"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        className="flex-1"
-        required
-      />
-      <CosmicSubmitButton className="px-6 whitespace-nowrap">Inscrever-se</CosmicSubmitButton>
-    </form>
-  )
+    <Form {...form}>
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="flex gap-2 max-w-md mx-auto"
+      >
+        <FormField
+          name="email"
+          control={form.control}
+          render={({ field }) => (
+            <FormItem className="flex-1">
+              <FormLabel>Email</FormLabel>
+              <FormControl>
+                <Input type="email" placeholder="seu@email.com" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <Button type="submit" className="px-6 whitespace-nowrap">
+          Inscrever-se
+        </Button>
+      </form>
+    </Form>
+  );
 }
