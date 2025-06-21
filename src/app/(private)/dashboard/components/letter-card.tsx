@@ -40,14 +40,33 @@ export function LetterCard({ letter }: LetterCardProps) {
       );
     }
 
-    // Por fim, verifica a data de liberação
-    if (releaseDate > now) {
-      return (
-        <CosmicBadge variant="cosmic-outline">Aguardando Liberação</CosmicBadge>
-      );
+    // Se está paga e ativa, mostra o status de liberação
+    if (
+      letter.status === "ACTIVE" &&
+      letter.paymentStatus === PaymentStatus.PAID
+    ) {
+      if (releaseDate > now) {
+        return (
+          <CosmicBadge
+            variant="cosmic-outline"
+            className="border-blue-400 text-blue-400"
+          >
+            <Clock className="h-3 w-3 mr-1" />
+            Ativa - Aguardando Liberação
+          </CosmicBadge>
+        );
+      } else {
+        return (
+          <CosmicBadge variant="cosmic-success">
+            <Clock className="h-3 w-3 mr-1" />
+            Ativa - Liberada
+          </CosmicBadge>
+        );
+      }
     }
 
-    return <CosmicBadge variant="cosmic-success">Liberada</CosmicBadge>;
+    // Status padrão
+    return <CosmicBadge variant="cosmic-outline">{letter.status}</CosmicBadge>;
   };
 
   const formatDate = (dateString: string) => {

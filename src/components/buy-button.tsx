@@ -15,7 +15,7 @@ export default function BuyButton({
 }: BuyButtonProps) {
   const [isCreatingCheckout, setIsCreatingCheckout] = useState(false);
 
-  async function handleClick(assinatura: boolean) {
+  async function handleClick() {
     try {
       setIsCreatingCheckout(true);
 
@@ -37,7 +37,7 @@ export default function BuyButton({
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ assinatura, testeId }),
+        body: JSON.stringify({ assinatura: false, testeId }),
       });
 
       const stripeClient = await loadStripe(
@@ -56,23 +56,13 @@ export default function BuyButton({
   }
 
   return (
-    <div className="flex flex-col gap-4">
-      <CosmicButton
-        disabled={isCreatingCheckout || disabled}
-        onClick={() => handleClick(false)}
-        className="w-full"
-        variant="cosmic"
-      >
-        {isCreatingCheckout ? "Processando..." : "Comprar"}
-      </CosmicButton>
-      <CosmicButton
-        disabled={isCreatingCheckout || disabled}
-        onClick={() => handleClick(true)}
-        className="w-full"
-        variant="cosmic-outline"
-      >
-        {isCreatingCheckout ? "Processando..." : "Assinar"}
-      </CosmicButton>
-    </div>
+    <CosmicButton
+      disabled={isCreatingCheckout || disabled}
+      onClick={handleClick}
+      className="w-full"
+      variant="cosmic"
+    >
+      {isCreatingCheckout ? "Processando..." : "Comprar Carta Cósmica"}
+    </CosmicButton>
   );
 }

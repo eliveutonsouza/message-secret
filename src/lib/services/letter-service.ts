@@ -1,7 +1,7 @@
-import { prisma } from "@/lib/prisma"
-import type { CreateLetterData, UpdateLetterData } from "@/lib/types/database"
-import type { LetterFiltersInput } from "@/lib/validations"
-import { PaymentStatus } from "@prisma/client"
+import { prisma } from "@/lib/prisma";
+import type { CreateLetterData, UpdateLetterData } from "@/lib/types/database";
+import type { LetterFiltersInput } from "@/lib/validations";
+import { PaymentStatus } from "@prisma/client";
 
 export class LetterService {
   static async createLetter(data: CreateLetterData) {
@@ -10,7 +10,7 @@ export class LetterService {
       include: {
         user: true,
       },
-    })
+    });
   }
 
   static async getLettersByUserId(userId: string) {
@@ -20,25 +20,25 @@ export class LetterService {
       include: {
         user: true,
       },
-    })
+    });
   }
 
   static async getFilteredLetters(userId: string, filters: LetterFiltersInput) {
-    const where: any = { userId }
+    const where: any = { userId };
 
     if (filters.status !== "all") {
-      where.paymentStatus = filters.status.toUpperCase() as PaymentStatus
+      where.paymentStatus = filters.status.toUpperCase() as PaymentStatus;
     }
 
     if (filters.favorite !== undefined) {
-      where.isFavorite = filters.favorite
+      where.isFavorite = filters.favorite;
     }
 
     if (filters.search) {
       where.OR = [
         { title: { contains: filters.search, mode: "insensitive" } },
         { content: { contains: filters.search, mode: "insensitive" } },
-      ]
+      ];
     }
 
     return await prisma.letter.findMany({
@@ -47,7 +47,7 @@ export class LetterService {
       include: {
         user: true,
       },
-    })
+    });
   }
 
   static async getLetterByUniqueLink(uniqueLink: string) {
@@ -56,7 +56,7 @@ export class LetterService {
       include: {
         user: true,
       },
-    })
+    });
   }
 
   static async getLetterById(id: string) {
@@ -65,7 +65,7 @@ export class LetterService {
       include: {
         user: true,
       },
-    })
+    });
   }
 
   static async updateLetter(id: string, data: UpdateLetterData) {
@@ -75,23 +75,23 @@ export class LetterService {
       include: {
         user: true,
       },
-    })
+    });
   }
 
   static async deleteLetter(id: string) {
     return await prisma.letter.delete({
       where: { id },
-    })
+    });
   }
 
   static async toggleFavorite(id: string) {
     const letter = await prisma.letter.findUnique({
       where: { id },
       select: { isFavorite: true },
-    })
+    });
 
     if (!letter) {
-      throw new Error("Carta não encontrada")
+      throw new Error("Carta não encontrada");
     }
 
     return await prisma.letter.update({
@@ -100,10 +100,14 @@ export class LetterService {
       include: {
         user: true,
       },
-    })
+    });
   }
 
-  static async updatePaymentStatus(id: string, paymentStatus: PaymentStatus, paymentId?: string) {
+  static async updatePaymentStatus(
+    id: string,
+    paymentStatus: PaymentStatus,
+    paymentId?: string
+  ) {
     return await prisma.letter.update({
       where: { id },
       data: {
@@ -113,11 +117,11 @@ export class LetterService {
       include: {
         user: true,
       },
-    })
+    });
   }
 
   static async getLettersReadyToRelease() {
-    const now = new Date()
+    const now = new Date();
     return await prisma.letter.findMany({
       where: {
         releaseDate: {
@@ -128,18 +132,27 @@ export class LetterService {
       include: {
         user: true,
       },
-    })
+    });
   }
 
   static async getLetterStats(userId: string) {
-    const [total, pending, paid, failed, favorites] = await Promise.all([
-      prisma.letter.count({ where: { userId } }),
-      prisma.letter.count({ where: { userId, paymentStatus: PaymentStatus.PENDING } }),
-      prisma.letter.count({ where: { userId, paymentStatus: PaymentStatus.PAID } }),
-      prisma.letter.count({ where: { userId, paymentStatus: PaymentStatus.FAILED } }),
-      prisma.letter.count({ where: { userId, isFavorite: true } }),
-    ])
+    const [total, pending, paid, failed, favorites, drafts, active] =
+      await Promise.all([
+        prisma.letter.count({ where: { userId } }),
+        prisma.letter.count({
+          where: { userId, paymentStatus: PaymentStatus.PENDING },
+        }),
+        prisma.letter.count({
+          where: { userId, paymentStatus: PaymentStatus.PAID },
+        }),
+        prisma.letter.count({
+          where: { userId, paymentStatus: PaymentStatus.FAILED },
+        }),
+        prisma.letter.count({ where: { userId, isFavorite: true } }),
+        prisma.letter.count({ where: { userId, status: "DRAFT" } }),
+        prisma.letter.count({ where: { userId, status: "ACTIVE" } }),
+      ]);
 
-    return { total, pending, paid, failed, favorites }
+    return { total, pending, paid, failed, favorites, drafts, active };
   }
 }
