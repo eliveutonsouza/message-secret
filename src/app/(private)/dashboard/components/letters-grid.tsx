@@ -1,12 +1,12 @@
-import { CosmicCard, CardContent } from "@/components/ui/cosmic-card"
-import { CosmicButton } from "@/components/ui/cosmic-button"
-import { LetterCard } from "./letter-card"
-import { Plus, Star } from "lucide-react"
-import Link from "next/link"
-import type { Letter } from "@prisma/client"
+import { CosmicCard, CardContent } from "@/components/ui/cosmic-card";
+import { CosmicButton } from "@/components/ui/cosmic-button";
+import { LetterCard } from "./letter-card";
+import { Plus, Star } from "lucide-react";
+import Link from "next/link";
+import type { Letter } from "@prisma/client";
 
 interface LettersGridProps {
-  letters: Letter[]
+  letters: Letter[];
 }
 
 export function LettersGrid({ letters }: LettersGridProps) {
@@ -15,8 +15,12 @@ export function LettersGrid({ letters }: LettersGridProps) {
       <CosmicCard className="text-center py-12">
         <CardContent>
           <Star className="h-16 w-16 text-purple-400 mx-auto mb-4" />
-          <h3 className="text-xl font-semibold text-purple-200 mb-2">Nenhuma carta criada ainda</h3>
-          <p className="text-purple-300 mb-6">Que tal começar sua jornada cósmica criando sua primeira carta?</p>
+          <h3 className="text-xl font-semibold text-purple-200 mb-2">
+            Nenhuma carta criada ainda
+          </h3>
+          <p className="text-purple-300 mb-6">
+            Que tal começar sua jornada cósmica criando sua primeira carta?
+          </p>
           <Link href="/create-letter">
             <CosmicButton>
               <Plus className="mr-2 h-4 w-4" />
@@ -25,7 +29,7 @@ export function LettersGrid({ letters }: LettersGridProps) {
           </Link>
         </CardContent>
       </CosmicCard>
-    )
+    );
   }
 
   return (
@@ -34,5 +38,5 @@ export function LettersGrid({ letters }: LettersGridProps) {
         <LetterCard key={letter.id} letter={letter} />
       ))}
     </div>
-  )
+  );
 }

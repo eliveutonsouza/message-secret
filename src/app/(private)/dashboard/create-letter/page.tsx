@@ -1,11 +1,11 @@
-import { CosmicButton } from "@/components/ui/cosmic-button"
-import { CreateLetterForm } from "./create-letter-form"
-import { ArrowLeft } from "lucide-react"
-import Link from "next/link"
-import { requireAuth } from "@/lib/auth"
+import { CosmicButton } from "@/components/ui/cosmic-button";
+import { CreateLetterForm } from "./components/create-letter-form";
+import { ArrowLeft } from "lucide-react";
+import Link from "next/link";
+import { requireAuth } from "@/lib/auth";
 
 export default async function CreateLetterPage() {
-  await requireAuth()
+  await requireAuth();
 
   return (
     <div className="min-h-screen text-white">
@@ -18,8 +18,12 @@ export default async function CreateLetterPage() {
               </CosmicButton>
             </Link>
             <div>
-              <h1 className="text-3xl md:text-4xl font-bold cosmic-text-glow">Criar Carta Cósmica</h1>
-              <p className="text-purple-200">Escreva uma mensagem que transcenderá o tempo</p>
+              <h1 className="text-3xl md:text-4xl font-bold cosmic-text-glow">
+                Criar Carta Cósmica
+              </h1>
+              <p className="text-purple-200">
+                Escreva uma mensagem que transcenderá o tempo
+              </p>
             </div>
           </div>
 
@@ -27,5 +31,5 @@ export default async function CreateLetterPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }
