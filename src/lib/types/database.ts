@@ -22,4 +22,5 @@ export type UpdateLetterData = Partial<{
   isFavorite: boolean;
   paymentStatus: PaymentStatus;
   paymentId: string;
+  status: "DRAFT" | "ACTIVE" | "ARCHIVED";
 }>;

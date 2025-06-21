@@ -233,3 +233,62 @@ export async function getLetterForFullPreviewAction(letterId: string) {
     return { error: "Erro ao buscar carta. Tente novamente." };
   }
 }
+
+export async function activateLetterAction(letterId: string) {
+  try {
+    const letter = await LetterService.getLetterById(letterId);
+    if (!letter) {
+      return { error: "Carta não encontrada" };
+    }
+
+    // Atualiza tanto o paymentStatus quanto o status da carta
+    await LetterService.updatePaymentStatus(letterId, "PAID");
+
+    // Atualiza o status da carta para ACTIVE
+    await LetterService.updateLetter(letterId, {
+      status: "ACTIVE",
+    });
+
+    revalidatePath("/dashboard");
+    return { success: true };
+  } catch (error) {
+    console.error("Erro ao ativar carta:", error);
+    return { error: "Erro ao ativar carta. Tente novamente." };
+  }
+}
+
+// Versão sem autenticação para webhooks
+export async function activateLetterActionFromWebhook(letterId: string) {
+  try {
+    const letter = await LetterService.getLetterById(letterId);
+    if (!letter) {
+      console.error("Carta não encontrada:", letterId);
+      return { error: "Carta não encontrada" };
+    }
+
+    console.log(
+      "Atualizando carta:",
+      letterId,
+      "Status atual:",
+      letter.status,
+      "PaymentStatus atual:",
+      letter.paymentStatus
+    );
+
+    // Atualiza tanto o paymentStatus quanto o status da carta
+    await LetterService.updatePaymentStatus(letterId, "PAID");
+
+    // Atualiza o status da carta para ACTIVE
+    await LetterService.updateLetter(letterId, {
+      status: "ACTIVE",
+    });
+
+    console.log("Carta atualizada com sucesso:", letterId);
+
+    revalidatePath("/dashboard");
+    return { success: true };
+  } catch (error) {
+    console.error("Erro ao ativar carta no webhook:", error);
+    return { error: "Erro ao ativar carta. Tente novamente." };
+  }
+}

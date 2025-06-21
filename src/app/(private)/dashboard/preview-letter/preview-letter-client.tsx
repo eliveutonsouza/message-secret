@@ -31,12 +31,14 @@ interface PreviewLetterClientProps {
   letter: LetterPreview;
   canBeViewed: boolean;
   timeUntilRelease: number;
+  sessionId?: string;
 }
 
 export function PreviewLetterClient({
   letter,
   canBeViewed: initialCanBeViewed,
   timeUntilRelease: initialTimeUntilRelease,
+  sessionId,
 }: PreviewLetterClientProps) {
   const [timeLeft, setTimeLeft] = useState(initialTimeUntilRelease);
   const [canBeViewed, setCanBeViewed] = useState(initialCanBeViewed);
@@ -58,7 +60,12 @@ export function PreviewLetterClient({
   useEffect(() => {
     // Define a origem apenas no cliente
     setOrigin(window.location.origin);
-  }, []);
+
+    // Mostra mensagem de sucesso se veio do pagamento
+    if (sessionId) {
+      toast.success("Pagamento realizado com sucesso! Sua carta está ativa.");
+    }
+  }, [sessionId]);
 
   useEffect(() => {
     const calculateTimeLeft = () => {
@@ -140,6 +147,24 @@ export function PreviewLetterClient({
           )}
         </div>
       </div>
+
+      {/* Confirmação de pagamento */}
+      {sessionId && (
+        <div className="bg-gradient-to-r from-green-900/50 via-emerald-800/50 to-green-900/50 rounded-xl p-6 border border-green-700/50 mb-8">
+          <div className="text-center">
+            <div className="flex items-center justify-center gap-3 text-green-200 mb-4">
+              <CreditCard className="h-8 w-8" />
+              <span className="text-xl font-medium">Pagamento Confirmado!</span>
+            </div>
+            <p className="text-green-300 mb-2">
+              ✅ Sua carta foi ativada com sucesso
+            </p>
+            <p className="text-green-200 text-sm">
+              A carta estará disponível para visualização na data de liberação
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Countdown */}
       {!canBeViewed && (

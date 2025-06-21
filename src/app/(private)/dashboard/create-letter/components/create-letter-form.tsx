@@ -19,8 +19,9 @@ import { createLetterAction } from "@/lib/actions";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { Sparkles, Save } from "lucide-react";
+import { Save } from "lucide-react";
 import AppointmentPicker from "@/components/ui/appointment-picker";
+import BuyButton from "@/components/buy-button";
 
 export function CreateLetterForm() {
   const router = useRouter();
@@ -66,29 +67,34 @@ export function CreateLetterForm() {
     }
   }
 
-  async function handleBuy() {
+  async function handleCreateLetterForPayment() {
     try {
       setIsSubmitting(true);
       const formData = new FormData();
       formData.append("title", form.getValues("title") ?? "");
       formData.append("content", form.getValues("content"));
       formData.append("releaseDate", form.getValues("releaseDate"));
-      formData.append("status", "ACTIVE");
+      formData.append("status", "DRAFT"); // Sempre cria como rascunho primeiro
 
       const result = await createLetterAction(formData);
       if (result?.error) {
         toast.error(result.error);
-        return;
+        return null;
       }
 
-      // O redirecionamento para o checkout é feito no createLetterAction
+      if (result.success && result.details?.letterId) {
+        return result.details.letterId;
+      }
+
+      toast.error("Erro ao criar carta");
+      return null;
     } catch (error) {
       if (error instanceof Error) {
         toast.error(error.message);
-        return;
+        return null;
       }
-      // Se o erro não for uma instância de Error, exiba uma mensagem genérica
       toast.error("Erro ao processar sua solicitação");
+      return null;
     } finally {
       setIsSubmitting(false);
     }
@@ -197,14 +203,10 @@ export function CreateLetterForm() {
         </div>
 
         <div className="flex flex-col gap-3">
-          <Button
-            onClick={handleBuy}
+          <BuyButton
+            onCreateLetter={handleCreateLetterForPayment}
             disabled={isSubmitting}
-            className="w-full flex items-center gap-2 shadow-md"
-          >
-            <Sparkles className="h-5 w-5" />
-            {isSubmitting ? "Processando..." : "Comprar Carta Cósmica"}
-          </Button>
+          />
           <Button
             onClick={handleSaveDraft}
             disabled={isSubmitting}

@@ -18,8 +18,8 @@ export async function POST(req: NextRequest) {
       ],
       mode: assinatura ? "subscription" : "payment",
       payment_method_types: assinatura ? ["card"] : ["card", "boleto"],
-      success_url: `${req.headers.get("origin")}/sucesso`,
-      cancel_url: `${req.headers.get("origin")}/`,
+      success_url: `${req.headers.get("origin")}/dashboard/preview-letter/${testeId}?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${req.headers.get("origin")}/dashboard`,
       metadata: {
         testeId,
       },

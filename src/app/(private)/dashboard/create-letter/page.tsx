@@ -13,7 +13,7 @@ export default async function CreateLetterPage() {
         <div className="max-w-2xl mx-auto">
           <div className="flex items-center gap-4 mb-8">
             <Link href="/dashboard">
-              <CosmicButton variant="cosmic-ghost" size="sm">
+              <CosmicButton variant="cosmic-ghost">
                 <ArrowLeft className="h-4 w-4" />
               </CosmicButton>
             </Link>

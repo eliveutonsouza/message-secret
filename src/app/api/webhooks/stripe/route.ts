@@ -1,19 +1,22 @@
 import stripe from "@/lib/stripe";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
+import { activateLetterActionFromWebhook } from "@/lib/actions/letter-actions";
 
 const secret = process.env.STRIPE_WEBHOOK_SECRET;
 
 export async function POST(req: Request) {
   try {
     const body = await req.text();
-    const signature = (await headers()).get("stripe-signature");
+    const headersList = await headers();
+    const signature = headersList.get("stripe-signature");
 
     if (!secret || !signature) {
       throw new Error("Missing secret or signature");
     }
 
     const event = stripe.webhooks.constructEvent(body, signature, secret);
+    console.log("Webhook recebido:", event.type);
 
     switch (event.type) {
       case "checkout.session.completed":
@@ -21,6 +24,14 @@ export async function POST(req: Request) {
           // pagagamento por cartão com sucesso
           const testeId = event.data.object.metadata?.testeId;
           console.log("pagagamento por cartão com sucesso", testeId);
+
+          if (testeId) {
+            console.log("Ativando carta com ID:", testeId);
+            const result = await activateLetterActionFromWebhook(testeId);
+            console.log("Resultado da ativação:", result);
+          } else {
+            console.log("testeId não encontrado no metadata");
+          }
         }
 
         if (
@@ -38,7 +49,6 @@ export async function POST(req: Request) {
 
           if (hostedVoucherUrl) {
             // O cliente gerou um boleto, manda um email pra ele
-            // const userEmail = event.data.object.customer_details?.email;
             console.log("gerou o boleto e o link é", hostedVoucherUrl);
           }
         }
@@ -57,6 +67,14 @@ export async function POST(req: Request) {
           // O cliente pagou o boleto e o pagamento foi confirmado
           const testeId = event.data.object.metadata?.testeId;
           console.log("pagamento boleto confirmado", testeId);
+
+          if (testeId) {
+            console.log("Ativando carta com ID (boleto):", testeId);
+            const result = await activateLetterActionFromWebhook(testeId);
+            console.log("Resultado da ativação (boleto):", result);
+          } else {
+            console.log("testeId não encontrado no metadata (boleto)");
+          }
         }
         break;
 

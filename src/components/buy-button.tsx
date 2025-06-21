@@ -2,52 +2,42 @@
 
 import { loadStripe } from "@stripe/stripe-js";
 import { useState } from "react";
-import { Sparkles } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { createLetterAction } from "@/lib/actions";
-import { toast } from "sonner";
-import type { CreateLetterInput } from "@/lib/schemas/letter";
+import { CosmicButton } from "./ui/cosmic-button";
 
 interface BuyButtonProps {
-  formData: CreateLetterInput;
-  onSaveDraft?: () => void;
+  onCreateLetter?: () => Promise<string | null>;
+  disabled?: boolean;
 }
 
-export default function BuyButton({ formData, onSaveDraft }: BuyButtonProps) {
+export default function BuyButton({
+  onCreateLetter,
+  disabled,
+}: BuyButtonProps) {
   const [isCreatingCheckout, setIsCreatingCheckout] = useState(false);
 
-  async function handleClick() {
+  async function handleClick(assinatura: boolean) {
     try {
       setIsCreatingCheckout(true);
 
-      // Primeiro cria a carta como rascunho
-      const formDataObj = new FormData();
-      formDataObj.append("title", formData.title ?? "");
-      formDataObj.append("content", formData.content);
-      formDataObj.append("releaseDate", formData.releaseDate);
-      formDataObj.append("status", "draft");
+      let testeId = "123"; // ID padrão para testes
 
-      const result = await createLetterAction(formDataObj);
-      if (result?.error) {
-        toast.error(result.error);
-        return;
+      // Se foi fornecida uma função para criar a carta, use ela
+      if (onCreateLetter) {
+        const letterId = await onCreateLetter();
+        if (letterId) {
+          testeId = letterId;
+        } else {
+          // Se não conseguiu criar a carta, não continua
+          return;
+        }
       }
 
-      if (!result.error) {
-        toast.error("Erro ao criar a carta. Tente novamente.");
-        return;
-      }
-
-      // Se a carta foi criada com sucesso, redireciona para o checkout
       const checkoutResponse = await fetch("/api/create-checkout", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          assinatura: false,
-          testeId: result.details?.letterId,
-        }),
+        body: JSON.stringify({ assinatura, testeId }),
       });
 
       const stripeClient = await loadStripe(
@@ -60,33 +50,29 @@ export default function BuyButton({ formData, onSaveDraft }: BuyButtonProps) {
       await stripeClient.redirectToCheckout({ sessionId });
     } catch (error) {
       console.error(error);
-      toast.error(
-        "Ocorreu um erro ao processar sua solicitação. Sua carta foi salva como rascunho."
-      );
-      if (onSaveDraft) onSaveDraft();
     } finally {
       setIsCreatingCheckout(false);
     }
   }
 
   return (
-    <div className="flex flex-col gap-5">
-      <Button
-        onClick={handleClick}
-        disabled={isCreatingCheckout}
-        className="w-full flex items-center gap-2 shadow-md"
+    <div className="flex flex-col gap-4">
+      <CosmicButton
+        disabled={isCreatingCheckout || disabled}
+        onClick={() => handleClick(false)}
+        className="w-full"
+        variant="cosmic"
       >
-        <Sparkles className="h-5 w-5" />
-        {isCreatingCheckout ? "Processando..." : "Comprar Carta Cósmica"}
-      </Button>
-      <Button
-        onClick={handleClick}
-        disabled={isCreatingCheckout}
-        className="w-full flex items-center gap-2 shadow-md"
+        {isCreatingCheckout ? "Processando..." : "Comprar"}
+      </CosmicButton>
+      <CosmicButton
+        disabled={isCreatingCheckout || disabled}
+        onClick={() => handleClick(true)}
+        className="w-full"
+        variant="cosmic-outline"
       >
-        <Sparkles className="h-5 w-5" />
-        {isCreatingCheckout ? "Processando..." : "Assinar Carta Cósmica"}
-      </Button>
+        {isCreatingCheckout ? "Processando..." : "Assinar"}
+      </CosmicButton>
     </div>
   );
 }

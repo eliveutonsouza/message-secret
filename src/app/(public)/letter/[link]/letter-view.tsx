@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useEffect } from "react";
 import {
   CosmicCard,
@@ -12,6 +14,7 @@ import { CosmicSeparator } from "@/components/ui/cosmic-separator";
 import { Clock, Heart, Sparkles, Lock, Calendar } from "lucide-react";
 import Link from "next/link";
 import type { Letter } from "@prisma/client";
+import { PaymentStatus } from "@prisma/client";
 
 interface LetterViewProps {
   letter: Letter;

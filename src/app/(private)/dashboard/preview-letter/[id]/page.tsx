@@ -1,19 +1,21 @@
 import { notFound } from "next/navigation";
 import { LetterService } from "@/lib/services/letter-service";
 import { auth } from "@/auth";
-import { PreviewLetterClient } from "./preview-letter-client";
+import { PreviewLetterClient } from "../preview-letter-client";
 
 interface PreviewLetterPageProps {
-  searchParams: { id?: string };
+  params: { id: string };
+  searchParams: { session_id?: string };
 }
 
 export default async function PreviewLetterPage({
+  params,
   searchParams,
 }: PreviewLetterPageProps) {
   const session = await auth();
   if (!session?.user?.id) return notFound();
 
-  const letterId = searchParams.id;
+  const letterId = params.id;
   if (!letterId) return notFound();
 
   const letter = await LetterService.getLetterById(letterId);
@@ -47,6 +49,7 @@ export default async function PreviewLetterPage({
       letter={previewData}
       canBeViewed={canBeViewed}
       timeUntilRelease={timeUntilRelease}
+      sessionId={searchParams.session_id}
     />
   );
 }
