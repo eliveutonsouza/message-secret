@@ -65,7 +65,11 @@ export function LetterCardActions({ letter }: LetterCardActionsProps) {
         setDeleteDialogOpen(false);
       }
     } catch (error) {
-      toast.error("Erro ao deletar carta");
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("Erro ao deletar carta");
+      }
     } finally {
       setIsDeleting(false);
     }
@@ -145,8 +149,8 @@ export function LetterCardActions({ letter }: LetterCardActionsProps) {
                     </DialogTitle>
                   </div>
                   <DialogDescription className="text-sm text-gray-600">
-                    Tem certeza que deseja deletar a carta "
-                    {letter.title || "Carta sem título"}"?
+                    Tem certeza que deseja deletar a carta &quot;
+                    {letter.title || "Carta sem título"}&quot;?
                     <br />
                     <span className="font-medium text-red-600">
                       Esta ação não pode ser desfeita.

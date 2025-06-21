@@ -19,8 +19,9 @@ import { createLetterAction } from "@/lib/actions";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { Save } from "lucide-react";
-import AppointmentPicker from "@/components/ui/appointment-picker";
+import { Save, MessageSquare, Shield, Clock } from "lucide-react";
+import ReleaseDatePicker from "@/components/ui/release-date-picker";
+import ExpirationPicker from "@/components/ui/expiration-picker";
 import BuyButton from "@/components/buy-button";
 
 export function CreateLetterForm() {
@@ -67,7 +68,6 @@ export function CreateLetterForm() {
         toast.error(error.message);
         return;
       }
-      // Se o erro não for uma instância de Error, exiba uma mensagem genérica
       toast.error("Erro ao salvar rascunho");
     } finally {
       setIsSubmitting(false);
@@ -81,7 +81,7 @@ export function CreateLetterForm() {
       formData.append("title", form.getValues("title") ?? "");
       formData.append("content", form.getValues("content"));
       formData.append("releaseDate", form.getValues("releaseDate"));
-      formData.append("status", "DRAFT"); // Sempre cria como rascunho primeiro
+      formData.append("status", "DRAFT");
       formData.append("accessPassword", form.getValues("accessPassword") ?? "");
       formData.append("maxViews", form.getValues("maxViews") ?? "");
       formData.append("expiresAt", form.getValues("expiresAt") ?? "");
@@ -112,173 +112,217 @@ export function CreateLetterForm() {
 
   return (
     <Form {...form}>
-      <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
-        <FormField
-          name="title"
-          control={form.control}
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-white">
-                Título da Carta (opcional)
-              </FormLabel>
-              <FormControl>
-                <Input
-                  className="bg-gradient-to-r from-purple-950 via-purple-900 to-blue-950 shadow-md border-none text-white placeholder:text-purple-300 focus:ring-2 focus:ring-fuchsia-500/60"
-                  placeholder="Ex: Para meu amor no futuro..."
-                  {...field}
-                  value={field.value || ""}
-                />
-              </FormControl>
-              <FormDescription className="text-purple-100/90">
-                Um título ajuda a identificar sua carta no dashboard
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          name="content"
-          control={form.control}
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-white">
-                Sua Mensagem Cósmica *
-              </FormLabel>
-              <FormControl>
-                <Textarea
-                  className="bg-gradient-to-r from-purple-950 via-purple-900 to-blue-950 shadow-md border-none text-white placeholder:text-purple-300 focus:ring-2 focus:ring-fuchsia-500/60"
-                  placeholder="Escreva aqui sua mensagem que transcenderá o tempo..."
-                  rows={8}
-                  {...field}
-                  value={field.value || ""}
-                />
-              </FormControl>
-              <div className="space-y-2">
-                <div className="flex justify-between text-sm">
-                  <FormDescription className="text-purple-100/90">
-                    {content.length}/5000 caracteres
-                  </FormDescription>
-                  <FormDescription className="text-purple-100/90 shadow-md">
-                    {contentProgress.toFixed(0)}%
-                  </FormDescription>
-                </div>
-                <div className="h-2 bg-gradient-to-r from-purple-950 via-purple-800 to-blue-900 rounded-full overflow-hidden">
-                  <div
-                    className="bg-gradient-to-r from-fuchsia-500 via-purple-500 to-blue-500 h-full shadow-lg"
-                    style={{ width: `${contentProgress}%` }}
-                  />
-                </div>
-              </div>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          name="releaseDate"
-          control={form.control}
-          render={({ field }) => {
-            return (
-              <FormItem>
-                <FormLabel className="text-white">
-                  Data e Horário de Liberação *
-                </FormLabel>
-                <AppointmentPicker
-                  value={field.value}
-                  onChange={field.onChange}
-                />
-                <FormDescription className="text-purple-100/90">
-                  A carta só poderá ser lida após esta data e horário (máximo 15
-                  dias)
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            );
-          }}
-        />
-        <FormField
-          name="accessPassword"
-          control={form.control}
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-white">
-                Senha de acesso (opcional)
-              </FormLabel>
-              <FormControl>
-                <Input
-                  type="password"
-                  className="bg-gradient-to-r from-purple-950 via-purple-900 to-blue-950 shadow-md border-none text-white placeholder:text-purple-300 focus:ring-2 focus:ring-fuchsia-500/60"
-                  placeholder="Defina uma senha para proteger sua carta"
-                  {...field}
-                  value={field.value ?? ""}
-                />
-              </FormControl>
-              <FormDescription className="text-purple-100/90">
-                Se preenchido, só quem souber a senha poderá acessar a carta
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          name="maxViews"
-          control={form.control}
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-white">
-                Limite de visualizações (opcional)
-              </FormLabel>
-              <FormControl>
-                <Input
-                  type="number"
-                  min={1}
-                  max={1000}
-                  className="bg-gradient-to-r from-purple-950 via-purple-900 to-blue-950 shadow-md border-none text-white placeholder:text-purple-300 focus:ring-2 focus:ring-fuchsia-500/60"
-                  placeholder="Ex: 5"
-                  {...field}
-                  value={field.value ?? ""}
-                />
-              </FormControl>
-              <FormDescription className="text-purple-100/90">
-                Após atingir esse limite, a carta não poderá mais ser
-                visualizada
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          name="expiresAt"
-          control={form.control}
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-white">
-                Data de expiração do link (opcional)
-              </FormLabel>
-              <FormControl>
-                <Input
-                  type="datetime-local"
-                  className="bg-gradient-to-r from-purple-950 via-purple-900 to-blue-950 shadow-md border-none text-white placeholder:text-purple-300 focus:ring-2 focus:ring-fuchsia-500/60"
-                  {...field}
-                  value={field.value ?? ""}
-                />
-              </FormControl>
-              <FormDescription className="text-purple-100/90">
-                Após essa data, ninguém poderá acessar a carta
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+      <form className="space-y-8" onSubmit={(e) => e.preventDefault()}>
+        {/* Seção 1: Informações Básicas */}
+        <div className="space-y-6">
+          <div className="flex items-center gap-3 pb-2 border-b border-purple-800/40">
+            <MessageSquare className="h-5 w-5 text-fuchsia-400" />
+            <h2 className="text-xl font-semibold text-white">
+              Informações da Carta
+            </h2>
+          </div>
 
-        <div className="bg-gradient-to-r from-purple-950 via-purple-900 to-blue-950 rounded-lg p-4 flex items-center gap-3 border border-purple-800/40 shadow-md">
-          <Info className="h-4 w-4 text-fuchsia-400" />
-          <div>
-            <h3 className="font-semibold text-fuchsia-300">
+          <div className="grid gap-6">
+            <FormField
+              name="title"
+              control={form.control}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-white flex items-center gap-2">
+                    <span className="text-fuchsia-400">*</span>
+                    Título da Carta (opcional)
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      className="bg-gradient-to-r from-purple-950 via-purple-900 to-blue-950 shadow-md border-none text-white placeholder:text-purple-300 focus:ring-2 focus:ring-fuchsia-500/60"
+                      placeholder="Ex: Para meu amor no futuro..."
+                      {...field}
+                      value={field.value || ""}
+                    />
+                  </FormControl>
+                  <FormDescription className="text-purple-100/90">
+                    Um título ajuda a identificar sua carta no dashboard
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              name="content"
+              control={form.control}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-white flex items-center gap-2">
+                    <span className="text-fuchsia-400">*</span>
+                    Sua Mensagem Cósmica
+                  </FormLabel>
+                  <FormControl>
+                    <Textarea
+                      className="bg-gradient-to-r from-purple-950 via-purple-900 to-blue-950 shadow-md border-none text-white placeholder:text-purple-300 focus:ring-2 focus:ring-fuchsia-500/60 min-h-[200px]"
+                      placeholder="Escreva aqui sua mensagem que transcenderá o tempo..."
+                      {...field}
+                      value={field.value || ""}
+                    />
+                  </FormControl>
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <FormDescription className="text-purple-100/90">
+                        {content.length}/5000 caracteres
+                      </FormDescription>
+                      <FormDescription className="text-purple-100/90 shadow-md">
+                        {contentProgress.toFixed(0)}%
+                      </FormDescription>
+                    </div>
+                    <div className="h-2 bg-gradient-to-r from-purple-950 via-purple-800 to-blue-900 rounded-full overflow-hidden">
+                      <div
+                        className="bg-gradient-to-r from-fuchsia-500 via-purple-500 to-blue-500 h-full shadow-lg transition-all duration-300"
+                        style={{ width: `${contentProgress}%` }}
+                      />
+                    </div>
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+        </div>
+
+        {/* Seção 2: Configurações de Tempo */}
+        <div className="space-y-6">
+          <div className="flex items-center gap-3 pb-2 border-b border-purple-800/40">
+            <Clock className="h-5 w-5 text-green-400" />
+            <h2 className="text-xl font-semibold text-white">
+              Configurações de Tempo
+            </h2>
+          </div>
+
+          <div className="grid gap-6">
+            <FormField
+              name="releaseDate"
+              control={form.control}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-white flex items-center gap-2">
+                    <span className="text-fuchsia-400">*</span>
+                    Data e Horário de Liberação
+                  </FormLabel>
+                  <FormControl>
+                    <ReleaseDatePicker
+                      value={field.value}
+                      onChange={field.onChange}
+                    />
+                  </FormControl>
+                  <FormDescription className="text-purple-100/90">
+                    A carta só poderá ser lida após esta data e horário (máximo
+                    15 dias)
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              name="expiresAt"
+              control={form.control}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-white flex items-center gap-2">
+                    Data de Expiração do Link (opcional)
+                  </FormLabel>
+                  <FormControl>
+                    <ExpirationPicker
+                      value={field.value}
+                      onChange={field.onChange}
+                    />
+                  </FormControl>
+                  <FormDescription className="text-purple-100/90">
+                    Após essa data, ninguém poderá acessar a carta
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+        </div>
+
+        {/* Seção 3: Configurações de Segurança */}
+        <div className="space-y-6">
+          <div className="flex items-center gap-3 pb-2 border-b border-purple-800/40">
+            <Shield className="h-5 w-5 text-blue-400" />
+            <h2 className="text-xl font-semibold text-white">
+              Configurações de Segurança
+            </h2>
+          </div>
+
+          <div className="grid gap-6 md:grid-cols-2">
+            <FormField
+              name="accessPassword"
+              control={form.control}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-white flex items-center gap-2">
+                    Senha de Acesso (opcional)
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      type="password"
+                      className="bg-gradient-to-r from-purple-950 via-purple-900 to-blue-950 shadow-md border-none text-white placeholder:text-purple-300 focus:ring-2 focus:ring-fuchsia-500/60"
+                      placeholder="Defina uma senha para proteger sua carta"
+                      {...field}
+                      value={field.value ?? ""}
+                    />
+                  </FormControl>
+                  <FormDescription className="text-purple-100/90">
+                    Se preenchido, só quem souber a senha poderá acessar a carta
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              name="maxViews"
+              control={form.control}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-white flex items-center gap-2">
+                    Limite de Visualizações (opcional)
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      min={1}
+                      max={1000}
+                      className="bg-gradient-to-r from-purple-950 via-purple-900 to-blue-950 shadow-md border-none text-white placeholder:text-purple-300 focus:ring-2 focus:ring-fuchsia-500/60"
+                      placeholder="Ex: 5"
+                      {...field}
+                      value={field.value ?? ""}
+                    />
+                  </FormControl>
+                  <FormDescription className="text-purple-100/90">
+                    Após atingir esse limite, a carta não poderá mais ser
+                    visualizada
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+        </div>
+
+        {/* Seção 4: Informações de Pagamento */}
+        <div className="bg-gradient-to-r from-purple-950 via-purple-900 to-blue-950 rounded-lg p-6 border border-purple-800/40 shadow-md">
+          <div className="flex items-center gap-3 mb-4">
+            <Info className="h-5 w-5 text-fuchsia-400" />
+            <h3 className="font-semibold text-fuchsia-300 text-lg">
               💫 Investimento Cósmico
             </h3>
-            <p className="text-sm text-purple-100">
+          </div>
+          <div className="space-y-2 text-purple-100">
+            <p className="text-sm">
               Cada carta cósmica custa apenas{" "}
-              <strong className="text-fuchsia-300">R$ 5,99</strong>
+              <strong className="text-fuchsia-300 text-lg">R$ 5,99</strong>
             </p>
             <p className="text-xs opacity-80 text-purple-300">
               Após criar a carta, você será direcionado para o pagamento seguro
@@ -286,7 +330,8 @@ export function CreateLetterForm() {
           </div>
         </div>
 
-        <div className="flex flex-col gap-3">
+        {/* Seção 5: Ações */}
+        <div className="space-y-4 pt-4">
           <BuyButton
             onCreateLetter={handleCreateLetterForPayment}
             disabled={isSubmitting}

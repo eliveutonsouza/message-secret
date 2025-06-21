@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getToken } from "next-auth/jwt";
 
 // Cache simples para rate limiting
 const rateLimitCache = new Map<string, { count: number; resetTime: number }>();
@@ -69,11 +68,11 @@ export default function middleware(req: NextRequest) {
     }
   }
 
-  // Proteção para rotas privadas
+  // Proteção para rotas privadas - verificar se tem cookie de sessão
   if (pathname.startsWith("/(private)")) {
-    const token = getToken({ req: req });
+    const sessionToken = req.cookies.get("authjs.session-token")?.value;
 
-    if (!token) {
+    if (!sessionToken) {
       return NextResponse.redirect(new URL("/login", req.url));
     }
   }
@@ -82,9 +81,9 @@ export default function middleware(req: NextRequest) {
   const protectedRoutes = ["/dashboard"];
 
   if (protectedRoutes.some((route) => pathname.startsWith(route))) {
-    const token = getToken({ req });
+    const sessionToken = req.cookies.get("authjs.session-token")?.value;
 
-    if (!token) {
+    if (!sessionToken) {
       return NextResponse.redirect(new URL("/login", req.url));
     }
   }
