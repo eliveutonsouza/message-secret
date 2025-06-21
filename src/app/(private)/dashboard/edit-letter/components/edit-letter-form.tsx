@@ -26,6 +26,9 @@ interface EditLetterFormProps {
     content: string;
     releaseDate: string;
     status: string;
+    accessPassword?: string | null;
+    maxViews?: number | null;
+    expiresAt?: Date | null;
   };
 }
 
@@ -37,6 +40,9 @@ export default function EditLetterForm({ letter }: EditLetterFormProps) {
       title: letter.title || "",
       content: letter.content || "",
       releaseDate: letter.releaseDate || "",
+      accessPassword: "",
+      maxViews: "",
+      expiresAt: "",
     },
   });
 
@@ -50,6 +56,9 @@ export default function EditLetterForm({ letter }: EditLetterFormProps) {
       formData.append("title", data.title || "");
       formData.append("content", data.content || "");
       formData.append("releaseDate", data.releaseDate || "");
+      formData.append("accessPassword", data.accessPassword || "");
+      formData.append("maxViews", data.maxViews || "");
+      formData.append("expiresAt", data.expiresAt || "");
       await updateLetterAction(letter.id, formData);
       toast.success("Carta atualizada com sucesso!");
     } catch {
@@ -141,6 +150,77 @@ export default function EditLetterForm({ letter }: EditLetterFormProps) {
               <FormDescription className="text-purple-100/90">
                 A carta só poderá ser lida após esta data e horário (máximo 15
                 dias)
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          name="accessPassword"
+          control={form.control}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="text-white">
+                Senha de acesso (opcional)
+              </FormLabel>
+              <FormControl>
+                <Input
+                  type="password"
+                  className="bg-gradient-to-r from-purple-950 via-purple-900 to-blue-950 shadow-md border-none text-white placeholder:text-purple-300 focus:ring-2 focus:ring-fuchsia-500/60"
+                  placeholder="Defina uma senha para proteger sua carta"
+                  {...field}
+                />
+              </FormControl>
+              <FormDescription className="text-purple-100/90">
+                Se preenchido, só quem souber a senha poderá acessar a carta
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          name="maxViews"
+          control={form.control}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="text-white">
+                Limite de visualizações (opcional)
+              </FormLabel>
+              <FormControl>
+                <Input
+                  type="number"
+                  min={1}
+                  max={1000}
+                  className="bg-gradient-to-r from-purple-950 via-purple-900 to-blue-950 shadow-md border-none text-white placeholder:text-purple-300 focus:ring-2 focus:ring-fuchsia-500/60"
+                  placeholder="Ex: 5"
+                  {...field}
+                />
+              </FormControl>
+              <FormDescription className="text-purple-100/90">
+                Após atingir esse limite, a carta não poderá mais ser
+                visualizada
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          name="expiresAt"
+          control={form.control}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="text-white">
+                Data de expiração do link (opcional)
+              </FormLabel>
+              <FormControl>
+                <Input
+                  type="datetime-local"
+                  className="bg-gradient-to-r from-purple-950 via-purple-900 to-blue-950 shadow-md border-none text-white placeholder:text-purple-300 focus:ring-2 focus:ring-fuchsia-500/60"
+                  {...field}
+                />
+              </FormControl>
+              <FormDescription className="text-purple-100/90">
+                Após essa data, ninguém poderá acessar a carta
               </FormDescription>
               <FormMessage />
             </FormItem>

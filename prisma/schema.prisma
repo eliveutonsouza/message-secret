@@ -76,18 +76,23 @@ model User {
 }
 
 model Letter {
-  id            String        @id @default(cuid())
-  userId        String
-  title         String?
-  content       String
-  releaseDate   DateTime
-  isFavorite    Boolean       @default(false)
-  status        LetterStatus  @default(DRAFT)
-  paymentStatus PaymentStatus @default(PENDING)
-  paymentId     String?
-  uniqueLink    String        @unique
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+  id             String        @id @default(cuid())
+  userId         String
+  title          String?
+  content        String
+  releaseDate    DateTime
+  isFavorite     Boolean       @default(false)
+  status         LetterStatus  @default(DRAFT)
+  paymentStatus  PaymentStatus @default(PENDING)
+  paymentId      String?
+  uniqueLink     String        @unique
+  accessPassword String? // Senha opcional para acesso
+  maxViews       Int? // Limite máximo de visualizações
+  viewCount      Int           @default(0) // Contador de visualizações
+  expiresAt      DateTime? // Data de expiração do link
+  isPublic       Boolean       @default(false) // Se pode ser compartilhada publicamente
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
 
   // Relations
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)

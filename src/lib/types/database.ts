@@ -13,6 +13,9 @@ export type CreateLetterData = {
   releaseDate: Date;
   uniqueLink: string;
   status?: "DRAFT" | "ACTIVE" | "ARCHIVED";
+  accessPassword?: string;
+  maxViews?: number;
+  expiresAt?: Date;
 };
 
 export type UpdateLetterData = Partial<{
@@ -23,4 +26,7 @@ export type UpdateLetterData = Partial<{
   paymentStatus: PaymentStatus;
   paymentId: string;
   status: "DRAFT" | "ACTIVE" | "ARCHIVED";
+  accessPassword: string | null;
+  maxViews: number | null;
+  expiresAt: Date | null;
 }>;

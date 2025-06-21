@@ -14,7 +14,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { createLetterSchema } from "@/lib/schemas/letter";
+import { createLetterSchema, CreateLetterInput } from "@/lib/schemas/letter";
 import { createLetterAction } from "@/lib/actions";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
@@ -26,12 +26,16 @@ import BuyButton from "@/components/buy-button";
 export function CreateLetterForm() {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const form = useForm({
+  const form = useForm<CreateLetterInput>({
     resolver: zodResolver(createLetterSchema),
     defaultValues: {
       title: "",
       content: "",
       releaseDate: "",
+      status: "DRAFT",
+      accessPassword: "",
+      maxViews: undefined,
+      expiresAt: "",
     },
   });
 
@@ -46,6 +50,9 @@ export function CreateLetterForm() {
       formData.append("content", form.getValues("content"));
       formData.append("releaseDate", form.getValues("releaseDate"));
       formData.append("status", "DRAFT");
+      formData.append("accessPassword", form.getValues("accessPassword") ?? "");
+      formData.append("maxViews", form.getValues("maxViews") ?? "");
+      formData.append("expiresAt", form.getValues("expiresAt") ?? "");
 
       const result = await createLetterAction(formData);
       if (result?.error) {
@@ -75,6 +82,9 @@ export function CreateLetterForm() {
       formData.append("content", form.getValues("content"));
       formData.append("releaseDate", form.getValues("releaseDate"));
       formData.append("status", "DRAFT"); // Sempre cria como rascunho primeiro
+      formData.append("accessPassword", form.getValues("accessPassword") ?? "");
+      formData.append("maxViews", form.getValues("maxViews") ?? "");
+      formData.append("expiresAt", form.getValues("expiresAt") ?? "");
 
       const result = await createLetterAction(formData);
       if (result?.error) {
@@ -184,6 +194,80 @@ export function CreateLetterForm() {
               </FormItem>
             );
           }}
+        />
+        <FormField
+          name="accessPassword"
+          control={form.control}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="text-white">
+                Senha de acesso (opcional)
+              </FormLabel>
+              <FormControl>
+                <Input
+                  type="password"
+                  className="bg-gradient-to-r from-purple-950 via-purple-900 to-blue-950 shadow-md border-none text-white placeholder:text-purple-300 focus:ring-2 focus:ring-fuchsia-500/60"
+                  placeholder="Defina uma senha para proteger sua carta"
+                  {...field}
+                  value={field.value ?? ""}
+                />
+              </FormControl>
+              <FormDescription className="text-purple-100/90">
+                Se preenchido, só quem souber a senha poderá acessar a carta
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          name="maxViews"
+          control={form.control}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="text-white">
+                Limite de visualizações (opcional)
+              </FormLabel>
+              <FormControl>
+                <Input
+                  type="number"
+                  min={1}
+                  max={1000}
+                  className="bg-gradient-to-r from-purple-950 via-purple-900 to-blue-950 shadow-md border-none text-white placeholder:text-purple-300 focus:ring-2 focus:ring-fuchsia-500/60"
+                  placeholder="Ex: 5"
+                  {...field}
+                  value={field.value ?? ""}
+                />
+              </FormControl>
+              <FormDescription className="text-purple-100/90">
+                Após atingir esse limite, a carta não poderá mais ser
+                visualizada
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          name="expiresAt"
+          control={form.control}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="text-white">
+                Data de expiração do link (opcional)
+              </FormLabel>
+              <FormControl>
+                <Input
+                  type="datetime-local"
+                  className="bg-gradient-to-r from-purple-950 via-purple-900 to-blue-950 shadow-md border-none text-white placeholder:text-purple-300 focus:ring-2 focus:ring-fuchsia-500/60"
+                  {...field}
+                  value={field.value ?? ""}
+                />
+              </FormControl>
+              <FormDescription className="text-purple-100/90">
+                Após essa data, ninguém poderá acessar a carta
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
         />
 
         <div className="bg-gradient-to-r from-purple-950 via-purple-900 to-blue-950 rounded-lg p-4 flex items-center gap-3 border border-purple-800/40 shadow-md">

@@ -21,7 +21,15 @@ export const createLetterSchema = z.object({
       message: "Data deve ser no futuro",
     }
   ),
-  status: z.enum(["DRAFT", "ACTIVE", "ARCHIVED"]).default("DRAFT"),
+  status: z.enum(["DRAFT", "ACTIVE", "ARCHIVED"]),
+  accessPassword: z
+    .string()
+    .min(4, "Senha muito curta")
+    .max(32, "Senha muito longa")
+    .optional()
+    .or(z.literal("")),
+  maxViews: z.string().optional().or(z.literal("")),
+  expiresAt: z.string().optional().or(z.literal("")),
 });
 
 export const updateLetterSchema = z.object({
@@ -45,6 +53,14 @@ export const updateLetterSchema = z.object({
     )
     .optional(),
   isFavorite: z.boolean().optional(),
+  accessPassword: z
+    .string()
+    .min(4, "Senha muito curta")
+    .max(32, "Senha muito longa")
+    .optional()
+    .or(z.literal("")),
+  maxViews: z.string().optional().or(z.literal("")),
+  expiresAt: z.string().optional().or(z.literal("")),
 });
 
 export const letterFiltersSchema = z.object({

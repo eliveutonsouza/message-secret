@@ -9,6 +9,7 @@ import {
 import { nanoid } from "nanoid";
 import { revalidatePath } from "next/cache";
 import { ZodError } from "zod";
+import { SecurityService } from "@/lib/services/security-service";
 
 export async function createLetterAction(formData: FormData) {
   try {
@@ -21,15 +22,47 @@ export async function createLetterAction(formData: FormData) {
     const content = formData.get("content") as string;
     const releaseDate = formData.get("releaseDate") as string;
     const status = formData.get("status") as "DRAFT" | "ACTIVE" | "ARCHIVED";
+    const accessPassword = formData.get("accessPassword") as string;
+    const maxViews = formData.get("maxViews") as string;
+    const expiresAt = formData.get("expiresAt") as string;
 
     const validatedData = createLetterSchema.parse({
       title: title || undefined,
       content,
       releaseDate,
       status,
+      accessPassword: accessPassword || undefined,
+      maxViews: maxViews || undefined,
+      expiresAt: expiresAt || undefined,
     });
 
     const uniqueLink = nanoid(12);
+
+    // Processar senha se fornecida
+    let hashedPassword: string | undefined;
+    if (validatedData.accessPassword && validatedData.accessPassword.trim()) {
+      hashedPassword = await SecurityService.hashPassword(
+        validatedData.accessPassword
+      );
+    }
+
+    // Processar limite de visualizações
+    let maxViewsNumber: number | undefined;
+    if (validatedData.maxViews && validatedData.maxViews.trim()) {
+      const parsed = parseInt(validatedData.maxViews, 10);
+      if (!isNaN(parsed) && parsed > 0 && parsed <= 1000) {
+        maxViewsNumber = parsed;
+      }
+    }
+
+    // Processar data de expiração
+    let expiresAtDate: Date | undefined;
+    if (validatedData.expiresAt && validatedData.expiresAt.trim()) {
+      expiresAtDate = new Date(validatedData.expiresAt);
+      if (isNaN(expiresAtDate.getTime())) {
+        return { error: "Data de expiração inválida" };
+      }
+    }
 
     const letter = await LetterService.createLetter({
       userId: session.user.id,
@@ -38,6 +71,9 @@ export async function createLetterAction(formData: FormData) {
       releaseDate: new Date(validatedData.releaseDate),
       uniqueLink,
       status: validatedData.status,
+      accessPassword: hashedPassword,
+      maxViews: maxViewsNumber,
+      expiresAt: expiresAtDate,
     });
 
     revalidatePath("/dashboard");
@@ -74,11 +110,17 @@ export async function updateLetterAction(letterId: string, formData: FormData) {
     const title = formData.get("title") as string;
     const content = formData.get("content") as string;
     const releaseDate = formData.get("releaseDate") as string;
+    const accessPassword = formData.get("accessPassword") as string;
+    const maxViews = formData.get("maxViews") as string;
+    const expiresAt = formData.get("expiresAt") as string;
 
     const validatedData = updateLetterSchema.parse({
       title: title || undefined,
       content: content || undefined,
       releaseDate: releaseDate || undefined,
+      accessPassword: accessPassword || undefined,
+      maxViews: maxViews || undefined,
+      expiresAt: expiresAt || undefined,
     });
 
     const updateData: Record<string, unknown> = {};
@@ -88,6 +130,41 @@ export async function updateLetterAction(letterId: string, formData: FormData) {
       updateData.content = validatedData.content;
     if (validatedData.releaseDate !== undefined)
       updateData.releaseDate = new Date(validatedData.releaseDate);
+
+    // Processar senha se fornecida
+    if (validatedData.accessPassword !== undefined) {
+      if (validatedData.accessPassword.trim()) {
+        updateData.accessPassword = await SecurityService.hashPassword(
+          validatedData.accessPassword
+        );
+      } else {
+        updateData.accessPassword = null; // Remove a senha se campo vazio
+      }
+    }
+
+    // Processar limite de visualizações
+    if (validatedData.maxViews !== undefined) {
+      if (validatedData.maxViews.trim()) {
+        const parsed = parseInt(validatedData.maxViews, 10);
+        if (!isNaN(parsed) && parsed > 0 && parsed <= 1000) {
+          updateData.maxViews = parsed;
+        }
+      } else {
+        updateData.maxViews = null; // Remove o limite se campo vazio
+      }
+    }
+
+    // Processar data de expiração
+    if (validatedData.expiresAt !== undefined) {
+      if (validatedData.expiresAt.trim()) {
+        const expiresAtDate = new Date(validatedData.expiresAt);
+        if (!isNaN(expiresAtDate.getTime())) {
+          updateData.expiresAt = expiresAtDate;
+        }
+      } else {
+        updateData.expiresAt = null; // Remove a data se campo vazio
+      }
+    }
 
     await LetterService.updateLetter(letterId, updateData);
 
