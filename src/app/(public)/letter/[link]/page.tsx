@@ -59,7 +59,9 @@ export default async function LetterPage({
     }
 
     // Mostrar erro de acesso negado para outros casos
-    return <AccessDeniedScreen reason={accessCheck.reason} />;
+    return (
+      <AccessDeniedScreen reason={accessCheck.reason || "Acesso negado"} />
+    );
   }
 
   // Log do acesso bem-sucedido

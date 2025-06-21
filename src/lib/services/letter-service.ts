@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import type { CreateLetterData, UpdateLetterData } from "@/lib/types/database";
 import type { LetterFiltersInput } from "@/lib/validations";
-import { PaymentStatus } from "@prisma/client";
+import { PaymentStatus, LetterStatus } from "@prisma/client";
 
 export class LetterService {
   static async createLetter(data: CreateLetterData) {
@@ -24,10 +24,18 @@ export class LetterService {
   }
 
   static async getFilteredLetters(userId: string, filters: LetterFiltersInput) {
-    const where: any = { userId };
+    const where: {
+      userId: string;
+      status?: LetterStatus;
+      isFavorite?: boolean;
+      OR?: Array<{
+        title?: { contains: string; mode: "insensitive" };
+        content?: { contains: string; mode: "insensitive" };
+      }>;
+    } = { userId };
 
-    if (filters.status !== "all") {
-      where.paymentStatus = filters.status.toUpperCase() as PaymentStatus;
+    if (filters.status) {
+      where.status = filters.status as LetterStatus;
     }
 
     if (filters.favorite !== undefined) {
