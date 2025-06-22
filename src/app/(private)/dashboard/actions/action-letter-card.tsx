@@ -108,13 +108,13 @@ export function LetterCardActions({ letter }: LetterCardActionsProps) {
                   </Link>
                 </CosmicDropdownMenuItem>
                 <CosmicDropdownMenuItem asChild>
-                  <Link href={`/payment/${letter.id}`}>
+                  <Link href={`/dashboard/payment/${letter.id}`}>
                     <CreditCard className="mr-2 h-4 w-4" />
                     Comprar Carta
                   </Link>
                 </CosmicDropdownMenuItem>
                 <CosmicDropdownMenuItem asChild>
-                  <Link href={`/dashboard/preview-letter?id=${letter.id}`}>
+                  <Link href={`/dashboard/preview-letter/${letter.id}`}>
                     <Eye className="mr-2 h-4 w-4" />
                     Pré-visualizar
                   </Link>

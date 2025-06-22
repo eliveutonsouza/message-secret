@@ -18,7 +18,7 @@ import { createLetterSchema, CreateLetterInput } from "@/lib/schemas/letter";
 import { createLetterAction } from "@/lib/actions";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { Save, MessageSquare, Shield, Clock } from "lucide-react";
 import ReleaseDatePicker from "@/components/ui/release-date-picker";
 import ExpirationPicker from "@/components/ui/expiration-picker";
@@ -41,9 +41,12 @@ export function CreateLetterForm() {
   });
 
   const content = form.watch("content");
-  const contentProgress = (content.length / 5000) * 100;
+  const contentProgress = useMemo(
+    () => (content.length / 5000) * 100,
+    [content.length]
+  );
 
-  async function handleSaveDraft() {
+  const handleSaveDraft = useCallback(async () => {
     try {
       setIsSubmitting(true);
       const formData = new FormData();
@@ -72,9 +75,9 @@ export function CreateLetterForm() {
     } finally {
       setIsSubmitting(false);
     }
-  }
+  }, [form, router, setIsSubmitting]);
 
-  async function handleCreateLetterForPayment() {
+  const handleCreateLetterForPayment = useCallback(async () => {
     try {
       setIsSubmitting(true);
       const formData = new FormData();
@@ -108,7 +111,7 @@ export function CreateLetterForm() {
     } finally {
       setIsSubmitting(false);
     }
-  }
+  }, [form, setIsSubmitting]);
 
   return (
     <Form {...form}>
@@ -130,19 +133,31 @@ export function CreateLetterForm() {
                 <FormItem>
                   <FormLabel className="text-white flex items-center gap-2">
                     <span className="text-fuchsia-400">*</span>
-                    Título da Carta (opcional)
+                    Título da Carta
                   </FormLabel>
                   <FormControl>
                     <Input
                       className="bg-gradient-to-r from-purple-950 via-purple-900 to-blue-950 shadow-md border-none text-white placeholder:text-purple-300 focus:ring-2 focus:ring-fuchsia-500/60"
-                      placeholder="Ex: Para meu amor no futuro..."
+                      placeholder="Ex: O que eu nunca te disse sobre nós..."
                       {...field}
                       value={field.value || ""}
                     />
                   </FormControl>
-                  <FormDescription className="text-purple-100/90">
-                    Um título ajuda a identificar sua carta no dashboard
-                  </FormDescription>
+                  <div className="space-y-2">
+                    <FormDescription className="text-purple-100/90">
+                      Um título ajuda a identificar sua carta no dashboard
+                    </FormDescription>
+                    <div className="p-3 bg-gradient-to-r from-yellow-900/30 to-orange-900/30 rounded-lg border border-yellow-700/40">
+                      <p className="text-yellow-200 text-xs font-medium mb-1">
+                        💡 Dica Estratégica:
+                      </p>
+                      <p className="text-yellow-100 text-xs">
+                        O título é visível antes da data de liberação.{" "}
+                        <strong>Não coloque seu nome</strong> - use algo que
+                        instigue curiosidade e mistério!
+                      </p>
+                    </div>
+                  </div>
                   <FormMessage />
                 </FormItem>
               )}
@@ -160,7 +175,7 @@ export function CreateLetterForm() {
                   <FormControl>
                     <Textarea
                       className="bg-gradient-to-r from-purple-950 via-purple-900 to-blue-950 shadow-md border-none text-white placeholder:text-purple-300 focus:ring-2 focus:ring-fuchsia-500/60 min-h-[200px]"
-                      placeholder="Escreva aqui sua mensagem que transcenderá o tempo..."
+                      placeholder="Querido(a) [nome], só queria que você soubesse o quanto é especial para mim. Cada momento ao seu lado faz meu mundo mais bonito. Guardei essas palavras para o momento certo. Com carinho, [seu nome]"
                       {...field}
                       value={field.value || ""}
                     />

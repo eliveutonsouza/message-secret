@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import {
@@ -16,6 +16,7 @@ import {
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import BuyButton from "@/components/buy-button";
 
 interface LetterPreview {
   id: string;
@@ -44,17 +45,21 @@ export function PreviewLetterClient({
   const [canBeViewed, setCanBeViewed] = useState(initialCanBeViewed);
   const [origin, setOrigin] = useState("");
 
-  const releaseDate =
-    typeof letter.releaseDate === "string"
-      ? new Date(letter.releaseDate)
-      : letter.releaseDate;
+  // Memorizar a data de liberação para evitar re-criação a cada render
+  const releaseDate = useMemo(
+    () =>
+      typeof letter.releaseDate === "string"
+        ? new Date(letter.releaseDate)
+        : letter.releaseDate,
+    [letter.releaseDate]
+  );
 
-  const formattedDate = format(
-    releaseDate,
-    "dd 'de' MMMM 'de' yyyy 'às' HH:mm",
-    {
-      locale: ptBR,
-    }
+  const formattedDate = useMemo(
+    () =>
+      format(releaseDate, "dd 'de' MMMM 'de' yyyy 'às' HH:mm", {
+        locale: ptBR,
+      }),
+    [releaseDate]
   );
 
   useEffect(() => {
@@ -111,6 +116,17 @@ export function PreviewLetterClient({
       toast.success("Link copiado para a área de transferência!");
     } catch {
       toast.error("Erro ao copiar link");
+    }
+  };
+
+  const translateStatus = (status: string) => {
+    switch (status) {
+      case "DRAFT":
+        return "Rascunho";
+      case "ACTIVE":
+        return "Ativa";
+      default:
+        return status;
     }
   };
 
@@ -233,12 +249,9 @@ export function PreviewLetterClient({
       {/* Botões de ação */}
       <div className="flex flex-col sm:flex-row gap-4">
         {letter.status === "DRAFT" && (
-          <Link href={`/payment/${letter.id}`} className="flex-1">
-            <Button className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white h-12 text-lg">
-              <CreditCard className="mr-2 h-5 w-5" />
-              Comprar Carta
-            </Button>
-          </Link>
+          <div className="flex-1">
+            <BuyButton disabled={false} onCreateLetter={undefined} />
+          </div>
         )}
 
         {letter.status === "ACTIVE" && canBeViewed && (
@@ -268,7 +281,9 @@ export function PreviewLetterClient({
       <div className="text-center text-purple-300 text-sm mt-8 p-4 bg-purple-900/20 rounded-lg border border-purple-700/30">
         <p className="mb-2">
           Status:{" "}
-          <span className="text-purple-200 font-medium">{letter.status}</span>
+          <span className="text-purple-200 font-medium">
+            {translateStatus(letter.status)}
+          </span>
         </p>
         {letter.status === "ACTIVE" && (
           <p className="text-green-300">

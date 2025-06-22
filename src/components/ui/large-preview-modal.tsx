@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Eye, Calendar, Heart, Copy, CreditCard, Clock } from "lucide-react";
 import { format } from "date-fns";
@@ -26,17 +26,21 @@ export function LargePreviewModal({ letter, trigger }: LargePreviewModalProps) {
   const [canBeViewed, setCanBeViewed] = useState(false);
   const [origin, setOrigin] = useState("");
 
-  const releaseDate =
-    typeof letter.releaseDate === "string"
-      ? new Date(letter.releaseDate)
-      : letter.releaseDate;
+  // Memorizar a data de liberação para evitar re-criação a cada render
+  const releaseDate = useMemo(
+    () =>
+      typeof letter.releaseDate === "string"
+        ? new Date(letter.releaseDate)
+        : letter.releaseDate,
+    [letter.releaseDate]
+  );
 
-  const formattedDate = format(
-    releaseDate,
-    "dd 'de' MMMM 'de' yyyy 'às' HH:mm",
-    {
-      locale: ptBR,
-    }
+  const formattedDate = useMemo(
+    () =>
+      format(releaseDate, "dd 'de' MMMM 'de' yyyy 'às' HH:mm", {
+        locale: ptBR,
+      }),
+    [releaseDate]
   );
 
   useEffect(() => {

@@ -10,6 +10,7 @@ import { nanoid } from "nanoid";
 import { revalidatePath } from "next/cache";
 import { ZodError } from "zod";
 import { SecurityService } from "@/lib/services/security-service";
+import { prisma } from "@/lib/prisma";
 
 export async function createLetterAction(formData: FormData) {
   try {
@@ -324,6 +325,9 @@ export async function activateLetterAction(letterId: string) {
     // Atualiza o status da carta para ACTIVE
     await LetterService.updateLetter(letterId, {
       status: "ACTIVE",
+      accessPassword: letter.accessPassword,
+      maxViews: letter.maxViews,
+      expiresAt: letter.expiresAt,
     });
 
     revalidatePath("/dashboard");
@@ -352,17 +356,18 @@ export async function activateLetterActionFromWebhook(letterId: string) {
       letter.paymentStatus
     );
 
-    // Atualiza tanto o paymentStatus quanto o status da carta
+    // Atualiza o paymentStatus
     await LetterService.updatePaymentStatus(letterId, "PAID");
 
-    // Atualiza o status da carta para ACTIVE
-    await LetterService.updateLetter(letterId, {
-      status: "ACTIVE",
+    // Atualiza o status da carta para ACTIVE usando Prisma diretamente
+    await prisma.letter.update({
+      where: { id: letterId },
+      data: { status: "ACTIVE" },
     });
 
     console.log("Carta atualizada com sucesso:", letterId);
 
-    revalidatePath("/dashboard");
+    // Não usar revalidatePath em webhooks
     return { success: true };
   } catch (error) {
     console.error("Erro ao ativar carta no webhook:", error);

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Button } from "@/components/ui/button";
@@ -63,37 +63,43 @@ export default function ReleaseDatePicker({
     { time: "20:30", available: true },
   ];
 
-  const handleDateSelect = (newDate: Date | undefined) => {
-    if (newDate && newDate >= today && newDate <= maxDate) {
-      setDate(newDate);
-      // Se já tem um horário selecionado, combina com a nova data
-      if (time) {
-        const [hours, minutes] = time.split(":");
-        const combinedDate = new Date(newDate);
+  const handleDateSelect = useCallback(
+    (newDate: Date | undefined) => {
+      if (newDate && newDate >= today && newDate <= maxDate) {
+        setDate(newDate);
+        // Se já tem um horário selecionado, combina com a nova data
+        if (time) {
+          const [hours, minutes] = time.split(":");
+          const combinedDate = new Date(newDate);
+          combinedDate.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+          onChange(combinedDate.toISOString());
+        }
+      }
+    },
+    [time, onChange, today, maxDate]
+  );
+
+  const handleTimeSelect = useCallback(
+    (selectedTime: string) => {
+      setTime(selectedTime);
+      if (date) {
+        const [hours, minutes] = selectedTime.split(":");
+        const combinedDate = new Date(date);
         combinedDate.setHours(parseInt(hours), parseInt(minutes), 0, 0);
         onChange(combinedDate.toISOString());
       }
-    }
-  };
+    },
+    [date, onChange]
+  );
 
-  const handleTimeSelect = (selectedTime: string) => {
-    setTime(selectedTime);
-    if (date) {
-      const [hours, minutes] = selectedTime.split(":");
-      const combinedDate = new Date(date);
-      combinedDate.setHours(parseInt(hours), parseInt(minutes), 0, 0);
-      onChange(combinedDate.toISOString());
-    }
-  };
-
-  const clearSelection = () => {
+  const clearSelection = useCallback(() => {
     setDate(undefined);
     setTime(null);
     onChange("");
     setOpen(false);
-  };
+  }, [onChange]);
 
-  const getDisplayText = () => {
+  const getDisplayText = useCallback(() => {
     if (date && time) {
       return format(
         new Date(
@@ -108,7 +114,7 @@ export default function ReleaseDatePicker({
       );
     }
     return "Selecionar data de liberação";
-  };
+  }, [date, time]);
 
   return (
     <div className="space-y-3">

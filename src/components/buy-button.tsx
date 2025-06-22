@@ -1,7 +1,7 @@
 "use client";
 
 import { loadStripe } from "@stripe/stripe-js";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { CosmicButton } from "./ui/cosmic-button";
 
 interface BuyButtonProps {
@@ -15,7 +15,7 @@ export default function BuyButton({
 }: BuyButtonProps) {
   const [isCreatingCheckout, setIsCreatingCheckout] = useState(false);
 
-  async function handleClick() {
+  const handleClick = useCallback(async () => {
     try {
       setIsCreatingCheckout(true);
 
@@ -53,7 +53,7 @@ export default function BuyButton({
     } finally {
       setIsCreatingCheckout(false);
     }
-  }
+  }, [onCreateLetter]);
 
   return (
     <CosmicButton

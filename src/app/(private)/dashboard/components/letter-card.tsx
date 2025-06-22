@@ -1,3 +1,5 @@
+"use client";
+
 import {
   CosmicCard,
   CardContent,
@@ -8,16 +10,21 @@ import { CosmicBadge } from "@/components/ui/cosmic-badge";
 import { Clock, FileText } from "lucide-react";
 import { Letter, PaymentStatus } from "@prisma/client";
 import { LetterCardActions } from "../actions/action-letter-card";
+import { useMemo } from "react";
 
 interface LetterCardProps {
   letter: Letter;
 }
 
 export function LetterCard({ letter }: LetterCardProps) {
-  const getStatusBadge = (letter: Letter) => {
-    const now = new Date();
-    const releaseDate = new Date(letter.releaseDate);
+  // Memorizar a data de liberação para evitar re-criação a cada render
+  const releaseDate = useMemo(
+    () => new Date(letter.releaseDate),
+    [letter.releaseDate]
+  );
+  const now = useMemo(() => new Date(), []);
 
+  const getStatusBadge = (letter: Letter) => {
     // Primeiro verifica o status da carta
     if (letter.status === "DRAFT") {
       return (
@@ -66,7 +73,11 @@ export function LetterCard({ letter }: LetterCardProps) {
     }
 
     // Status padrão
-    return <CosmicBadge variant="cosmic-outline">{letter.status}</CosmicBadge>;
+    return (
+      <CosmicBadge variant="cosmic-outline">
+        {letter.status === "ACTIVE" ? "Ativa" : letter.status}
+      </CosmicBadge>
+    );
   };
 
   const formatDate = (dateString: string) => {
@@ -78,6 +89,12 @@ export function LetterCard({ letter }: LetterCardProps) {
       minute: "2-digit",
     });
   };
+
+  // Memorizar a data formatada para evitar re-cálculos
+  const formattedReleaseDate = useMemo(
+    () => formatDate(letter.releaseDate.toISOString()),
+    [letter.releaseDate]
+  );
 
   return (
     <CosmicCard className="relative group">
@@ -107,7 +124,7 @@ export function LetterCard({ letter }: LetterCardProps) {
           </p>
           <div className="flex items-center text-purple-400 text-sm">
             <Clock className="h-4 w-4 mr-1" />
-            Libera em: {formatDate(letter.releaseDate.toISOString())}
+            Libera em: {formattedReleaseDate}
           </div>
         </div>
       </CardContent>

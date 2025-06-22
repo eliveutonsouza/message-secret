@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { format } from "date-fns";
 
 import { Button } from "@/components/ui/button";
@@ -30,7 +30,7 @@ export default function AppointmentPicker({
       const iso = `${date.toISOString().split("T")[0]}T${time}`;
       onChange(iso);
     }
-  }, [date, time, onChange]);
+  }, [date, time]);
 
   const timeSlots = [
     { time: "09:00", available: false },
@@ -53,18 +53,27 @@ export default function AppointmentPicker({
     { time: "17:30", available: true },
   ];
 
+  const handleDateSelect = useCallback(
+    (newDate: Date | undefined) => {
+      if (newDate && newDate >= today && newDate <= maxDate) {
+        setDate(newDate);
+        setTime(null);
+      }
+    },
+    [today, maxDate]
+  );
+
+  const handleTimeSelect = useCallback((timeSlot: string) => {
+    setTime(timeSlot);
+  }, []);
+
   return (
     <div className="rounded-lg border border-purple-800/40 bg-gradient-to-r from-purple-950 via-purple-900 to-blue-950 shadow-md p-2">
       <div className="flex max-sm:flex-col gap-4">
         <Calendar
           mode="single"
           selected={date}
-          onSelect={(newDate) => {
-            if (newDate && newDate >= today && newDate <= maxDate) {
-              setDate(newDate);
-              setTime(null);
-            }
-          }}
+          onSelect={handleDateSelect}
           className="p-2 sm:pe-5"
           disabled={[{ before: today }, { after: maxDate }]}
         />
@@ -88,7 +97,7 @@ export default function AppointmentPicker({
                           ? "bg-gradient-to-r from-fuchsia-500 via-purple-500 to-blue-500 text-white"
                           : "bg-gradient-to-r from-purple-950 via-purple-900 to-blue-950 text-purple-200 hover:text-white"
                       }`}
-                      onClick={() => setTime(timeSlot)}
+                      onClick={() => handleTimeSelect(timeSlot)}
                       disabled={!available}
                     >
                       {timeSlot}

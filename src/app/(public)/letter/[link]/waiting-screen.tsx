@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import {
@@ -30,13 +30,18 @@ interface WaitingScreenProps {
 export function WaitingScreen({ letter }: WaitingScreenProps) {
   const [timeLeft, setTimeLeft] = useState<number>(0);
 
-  const releaseDate = new Date(letter.releaseDate);
-  const formattedDate = format(
-    releaseDate,
-    "dd 'de' MMMM 'de' yyyy 'às' HH:mm",
-    {
-      locale: ptBR,
-    }
+  // Memorizar a data de liberação para evitar re-criação a cada render
+  const releaseDate = useMemo(
+    () => new Date(letter.releaseDate),
+    [letter.releaseDate]
+  );
+
+  const formattedDate = useMemo(
+    () =>
+      format(releaseDate, "dd 'de' MMMM 'de' yyyy 'às' HH:mm", {
+        locale: ptBR,
+      }),
+    [releaseDate]
   );
 
   useEffect(() => {
@@ -58,11 +63,16 @@ export function WaitingScreen({ letter }: WaitingScreenProps) {
     return () => clearInterval(timer);
   }, [releaseDate]);
 
-  const totalDuration =
-    releaseDate.getTime() - new Date(letter.createdAt).getTime();
-  const elapsed = totalDuration - timeLeft;
-  const progressPercentage =
-    totalDuration > 0 ? (elapsed / totalDuration) * 100 : 100;
+  // Memorizar os cálculos de progresso para evitar re-cálculos desnecessários
+  const { progressPercentage } = useMemo(() => {
+    const total = releaseDate.getTime() - new Date(letter.createdAt).getTime();
+    const elapsed = total - timeLeft;
+    const progress = total > 0 ? (elapsed / total) * 100 : 100;
+
+    return {
+      progressPercentage: progress,
+    };
+  }, [releaseDate, letter.createdAt, timeLeft]);
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 text-white bg-gradient-to-br from-purple-900 via-pink-900 to-indigo-900">

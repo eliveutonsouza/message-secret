@@ -4,9 +4,7 @@ export const createLetterSchema = z.object({
   title: z
     .string()
     .min(1, "Título é obrigatório")
-    .max(100, "Título muito longo")
-    .optional()
-    .or(z.literal("")),
+    .max(100, "Título muito longo"),
   content: z
     .string()
     .min(10, "Mensagem deve ter pelo menos 10 caracteres")
@@ -28,9 +26,7 @@ export const updateLetterSchema = z.object({
   title: z
     .string()
     .min(1, "Título é obrigatório")
-    .max(100, "Título muito longo")
-    .optional()
-    .or(z.literal("")),
+    .max(100, "Título muito longo"),
   content: z
     .string()
     .min(10, "Mensagem deve ter pelo menos 10 caracteres")
