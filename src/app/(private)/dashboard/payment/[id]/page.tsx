@@ -78,8 +78,7 @@ export default function PaymentPage({ params }: PaymentPageProps) {
             <span>Redirecionando para o checkout seguro</span>
           </div>
           <p className="text-purple-300 text-sm">
-            Você será redirecionado para a página de pagamento do Stripe em
-            instantes.
+            Você será redirecionado para a página de pagamento em instantes.
           </p>
           <CosmicButton
             onClick={() => router.push("/dashboard")}

@@ -7,10 +7,28 @@ import {
 import { CosmicButton } from "@/components/ui/cosmic-button";
 import { Heart, Clock, Star, Sparkles } from "lucide-react";
 import Link from "next/link";
+import { Logo } from "@/components/ui/logo";
 
 export default function HomePage() {
   return (
     <div className="min-h-screen text-white">
+      {/* Header */}
+      <header className="container mx-auto px-4 py-6">
+        <div className="flex items-center justify-between">
+          <Logo size="md" href="/" />
+          <div className="flex items-center gap-4">
+            <Link href="/contact">
+              <CosmicButton variant="cosmic-ghost" className="text-sm">
+                Contato
+              </CosmicButton>
+            </Link>
+            <Link href="/login">
+              <CosmicButton className="text-sm">Entrar</CosmicButton>
+            </Link>
+          </div>
+        </div>
+      </header>
+
       {/* Hero Section */}
       <section className="container mx-auto px-4 py-20 text-center">
         <div className="max-w-4xl mx-auto">
@@ -27,7 +45,7 @@ export default function HomePage() {
             espaço-tempo.
           </p>
           <Link href="/login">
-            <CosmicButton size="lg" className="text-lg px-8 py-4">
+            <CosmicButton className="text-lg px-8 py-4">
               <Sparkles className="mr-2 h-5 w-5" />
               Começar Jornada Cósmica
             </CosmicButton>
@@ -103,8 +121,8 @@ export default function HomePage() {
           <CosmicCard>
             <CardContent className="p-6">
               <p className="text-purple-200 italic text-lg mb-4">
-                "O amor não conhece distância nem tempo. Ele simplesmente é,
-                como as estrelas que brilham há milhões de anos."
+                &ldquo;O amor não conhece distância nem tempo. Ele simplesmente
+                é, como as estrelas que brilham há milhões de anos.&rdquo;
               </p>
               <p className="text-purple-400 text-sm">
                 — Carta enviada para o futuro
@@ -115,8 +133,8 @@ export default function HomePage() {
           <CosmicCard>
             <CardContent className="p-6">
               <p className="text-purple-200 italic text-lg mb-4">
-                "Cada palavra escrita com amor se torna uma constelação no
-                universo de quem a recebe."
+                &ldquo;Cada palavra escrita com amor se torna uma constelação no
+                universo de quem a recebe.&rdquo;
               </p>
               <p className="text-purple-400 text-sm">
                 — Mensagem cósmica anônima
@@ -137,7 +155,7 @@ export default function HomePage() {
               Crie sua primeira carta cósmica por apenas R$ 5,99
             </p>
             <Link href="/login">
-              <CosmicButton size="lg" className="text-lg px-8 py-4">
+              <CosmicButton className="text-lg px-8 py-4">
                 <Sparkles className="mr-2 h-5 w-5" />
                 Iniciar Jornada
               </CosmicButton>
@@ -149,6 +167,12 @@ export default function HomePage() {
       {/* Footer */}
       <footer className="border-t border-purple-500/30 py-8">
         <div className="container mx-auto px-4 text-center">
+          <div className="flex items-center justify-center mb-4">
+            <Logo size="sm" showText={false} href={undefined} />
+            <span className="text-lg font-semibold text-purple-200 ml-3">
+              Cartas Cósmicas
+            </span>
+          </div>
           <p className="text-purple-300">
             © 2024 Cartas Cósmicas. Feito com ❤️ para conectar corações através
             do universo.

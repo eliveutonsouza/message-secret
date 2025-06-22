@@ -12,9 +12,10 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/cosmic-dropdown";
 import { signOutAction } from "@/lib/actions";
-import { User, LogOut, Settings } from "lucide-react";
+import { LogOut, Settings } from "lucide-react";
 import type { User as NextAuthUser } from "next-auth";
 import { toast } from "sonner";
+import Link from "next/link";
 
 interface UserDropdownProps {
   user: NextAuthUser;
@@ -35,7 +36,7 @@ export function UserDropdown({ user, avatar }: UserDropdownProps) {
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
-          className="text-purple-300 hover:text-purple-200"
+          className="text-purple-300 hover:bg-transparent hover:text-purple-200"
         >
           {avatar}
           <span className="hidden md:inline ml-2">
@@ -46,13 +47,11 @@ export function UserDropdown({ user, avatar }: UserDropdownProps) {
       <CosmicDropdownMenuContent align="end">
         <CosmicDropdownMenuLabel>Minha Conta</CosmicDropdownMenuLabel>
         <DropdownMenuSeparator />
-        <CosmicDropdownMenuItem>
-          <User className="mr-2 h-4 w-4" />
-          Perfil
-        </CosmicDropdownMenuItem>
-        <CosmicDropdownMenuItem>
-          <Settings className="mr-2 h-4 w-4" />
-          Configurações
+        <CosmicDropdownMenuItem asChild>
+          <Link href="/dashboard/settings">
+            <Settings className="mr-2 h-4 w-4" />
+            Configurações
+          </Link>
         </CosmicDropdownMenuItem>
         <DropdownMenuSeparator />
         <CosmicDropdownMenuItem onClick={handleSignOut}>

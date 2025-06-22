@@ -1,11 +1,11 @@
-import { prisma } from "@/lib/prisma"
+import { prisma } from "@/lib/prisma";
 
 export class UserService {
   static async createUser(data: {
-    id: string
-    email: string
-    name?: string
-    avatarUrl?: string
+    id: string;
+    email: string;
+    name?: string;
+    avatarUrl?: string;
   }) {
     return await prisma.user.upsert({
       where: { id: data.id },
@@ -15,18 +15,21 @@ export class UserService {
         avatarUrl: data.avatarUrl,
       },
       create: data,
-    })
+    });
   }
 
-  static async getUserById(id: string) {
+  static async getUserById(userId: string) {
     return await prisma.user.findUnique({
-      where: { id },
-      include: {
-        letters: {
-          orderBy: { createdAt: "desc" },
-        },
+      where: { id: userId },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        image: true,
+        createdAt: true,
+        updatedAt: true,
       },
-    })
+    });
   }
 
   static async getUserByEmail(email: string) {
@@ -37,25 +40,27 @@ export class UserService {
           orderBy: { createdAt: "desc" },
         },
       },
-    })
+    });
   }
 
-  static async updateUser(
-    id: string,
-    data: {
-      name?: string
-      avatarUrl?: string
-    },
-  ) {
+  static async updateUser(userId: string, data: { name?: string }) {
     return await prisma.user.update({
-      where: { id },
+      where: { id: userId },
       data,
-    })
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        image: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
   }
 
-  static async deleteUser(id: string) {
+  static async deleteUser(userId: string) {
     return await prisma.user.delete({
-      where: { id },
-    })
+      where: { id: userId },
+    });
   }
 }

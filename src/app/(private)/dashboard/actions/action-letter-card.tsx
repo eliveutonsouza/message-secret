@@ -82,7 +82,7 @@ export function LetterCardActions({ letter }: LetterCardActionsProps) {
           variant="ghost"
           size="sm"
           onClick={handleToggleFavorite}
-          className="text-purple-300 hover:text-purple-200 p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+          className="text-purple-300 hover:bg-purple-900 hover:text-purple-200 p-1 opacity-0 group-hover:opacity-100 transition-opacity"
         >
           <Heart
             className={`h-4 w-4 ${letter.isFavorite ? "fill-current text-red-400" : ""}`}
@@ -93,7 +93,7 @@ export function LetterCardActions({ letter }: LetterCardActionsProps) {
             <Button
               variant="ghost"
               size="sm"
-              className="text-purple-300 hover:text-purple-200 p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+              className="text-purple-300 hover:bg-purple-900 hover:text-purple-200 p-1 opacity-0 group-hover:opacity-100 transition-opacity"
             >
               <MoreVertical className="h-4 w-4" />
             </Button>

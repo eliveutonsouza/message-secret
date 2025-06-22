@@ -1,0 +1,26 @@
+{
+  "name": "Cartas Cósmicas",
+  "short_name": "Cartas Cósmicas",
+  "description": "Crie cartas misteriosas que só podem ser lidas na data escolhida. Envie amor através do espaço-tempo.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1e1b4b",
+  "theme_color": "#8b5cf6",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/logo.svg",
+      "sizes": "64x64",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/favicon.svg",
+      "sizes": "32x32",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "categories": ["lifestyle", "social", "communication"],
+  "lang": "pt-BR"
+}

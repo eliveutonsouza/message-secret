@@ -14,7 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { signInSchema } from "@/lib/schemas/auth";
 import { signInWithEmail } from "@/lib/actions";
-import { Mail, Sparkles, Zap } from "lucide-react";
+import { Mail } from "lucide-react";
 import { toast } from "sonner";
 
 interface LoginFormProps {
@@ -30,13 +30,17 @@ export function LoginForm({ callbackUrl }: LoginFormProps) {
     },
   });
 
-  async function onSubmit(values) {
-    const result = await signInWithEmail(values);
+  async function onSubmit(values: { email: string; callbackUrl?: string }) {
+    const formData = new FormData();
+    formData.append("email", values.email);
+    formData.append("callbackUrl", values.callbackUrl || "/dashboard");
+
+    const result = await signInWithEmail(formData);
     if (result?.error) {
       toast.error(result.error);
     } else {
-      toast.success("Link mágico enviado! ✨", {
-        description: "Verifique seu email para acessar sua conta cósmica.",
+      toast.success("Link mágico enviado!", {
+        description: "Verifique seu email para acessar sua conta.",
       });
     }
   }
@@ -56,9 +60,8 @@ export function LoginForm({ callbackUrl }: LoginFormProps) {
             control={form.control}
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-purple-200 font-medium flex items-center gap-2">
-                  <Mail className="h-4 w-4" />
-                  Email Cósmico
+                <FormLabel className="text-purple-200 font-medium">
+                  Email
                 </FormLabel>
                 <FormControl>
                   <Input
@@ -76,19 +79,15 @@ export function LoginForm({ callbackUrl }: LoginFormProps) {
 
         <Button
           type="submit"
-          className="w-full bg-gradient-to-r from-purple-600 via-pink-600 to-indigo-600 hover:from-purple-700 hover:via-pink-700 hover:to-indigo-700 text-white font-medium py-3 px-6 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-3 group"
+          className="w-full bg-gradient-to-r from-purple-600 via-pink-600 to-indigo-600 hover:from-purple-700 hover:via-pink-700 hover:to-indigo-700 text-white font-medium py-3 px-6 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-2"
         >
-          <div className="relative">
-            <Mail className="h-5 w-5 group-hover:animate-bounce" />
-            <Sparkles className="absolute -top-1 -right-1 h-3 w-3 text-yellow-300 opacity-0 group-hover:opacity-100 transition-opacity" />
-          </div>
+          <Mail className="h-5 w-5" />
           <span>Enviar Link Mágico</span>
-          <Zap className="h-4 w-4 group-hover:animate-pulse" />
         </Button>
 
         <div className="text-center">
           <p className="text-purple-300 text-xs">
-            ✨ Um link mágico será enviado para seu email ✨
+            Um link mágico será enviado para seu email
           </p>
         </div>
       </form>

@@ -1,0 +1,84 @@
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle with gradient -->
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#8B5CF6;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#EC4899;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#6366F1;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="cardGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFFFFF;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#F3F4F6;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="textGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#E9D5FF;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#FCE7F3;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#C7D2FE;stop-opacity:1" />
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="textGlow">
+      <feGaussianBlur stdDeviation="1.5" result="textBlur"/>
+      <feMerge> 
+        <feMergeNode in="textBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Background circle for icon -->
+  <circle cx="100" cy="70" r="45" fill="url(#bgGradient)" filter="url(#glow)"/>
+  
+  <!-- Envelope/Card base -->
+  <rect x="70" y="45" width="60" height="50" rx="3" fill="url(#cardGradient)" stroke="#8B5CF6" stroke-width="2"/>
+  
+  <!-- Envelope flap -->
+  <path d="M70 45 L100 65 L130 45" stroke="#8B5CF6" stroke-width="2" fill="none"/>
+  
+  <!-- Heart symbol -->
+  <path d="M88 70 C88 67 91 64 94 64 C97 64 100 67 100 70 C100 73 97 76 94 76 C91 76 88 73 88 70 Z" fill="#EC4899"/>
+  <path d="M94 64 C95.5 62.5 97 62.5 98.5 64 C100 65.5 100 67 98.5 68.5 C97 70 95.5 70 94 68.5 C92.5 67 92.5 65.5 94 64 Z" fill="#EC4899"/>
+  
+  <!-- Stars -->
+  <circle cx="80" cy="60" r="1.5" fill="#FCD34D"/>
+  <circle cx="120" cy="60" r="1.5" fill="#FCD34D"/>
+  <circle cx="85" cy="80" r="1.2" fill="#FCD34D"/>
+  <circle cx="115" cy="80" r="1.2" fill="#FCD34D"/>
+  
+  <!-- Cosmic lines -->
+  <path d="M75 30 L80 35" stroke="#8B5CF6" stroke-width="1.5" opacity="0.6"/>
+  <path d="M125 30 L120 35" stroke="#8B5CF6" stroke-width="1.5" opacity="0.6"/>
+  <path d="M75 110 L80 105" stroke="#8B5CF6" stroke-width="1.5" opacity="0.6"/>
+  <path d="M125 110 L120 105" stroke="#8B5CF6" stroke-width="1.5" opacity="0.6"/>
+  
+  <!-- Main Text: "Cartas Cósmicas" -->
+  <text x="100" y="130" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="18" font-weight="700" fill="url(#textGradient)" filter="url(#textGlow)">
+    Cartas Cósmicas
+  </text>
+  
+  <!-- Subtitle: "Mensagens que transcendem o tempo" -->
+  <text x="100" y="150" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="10" font-weight="400" fill="#A78BFA" opacity="0.8">
+    Mensagens que transcendem o tempo
+  </text>
+  
+  <!-- Decorative elements around the logo -->
+  <circle cx="30" cy="40" r="2" fill="#EC4899" opacity="0.6"/>
+  <circle cx="170" cy="40" r="2" fill="#8B5CF6" opacity="0.6"/>
+  <circle cx="40" cy="160" r="1.5" fill="#FCD34D" opacity="0.6"/>
+  <circle cx="160" cy="160" r="1.5" fill="#EC4899" opacity="0.6"/>
+  
+  <!-- Subtle connecting lines -->
+  <path d="M60 100 L70 100" stroke="#8B5CF6" stroke-width="1" opacity="0.3"/>
+  <path d="M130 100 L140 100" stroke="#8B5CF6" stroke-width="1" opacity="0.3"/>
+  
+  <!-- Additional cosmic elements -->
+  <circle cx="50" cy="120" r="1" fill="#8B5CF6" opacity="0.4"/>
+  <circle cx="150" cy="120" r="1" fill="#EC4899" opacity="0.4"/>
+  <circle cx="60" cy="180" r="0.8" fill="#FCD34D" opacity="0.4"/>
+  <circle cx="140" cy="180" r="0.8" fill="#8B5CF6" opacity="0.4"/>
+</svg> 
